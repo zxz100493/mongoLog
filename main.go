@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"logApp/router"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
