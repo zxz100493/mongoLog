@@ -1,30 +1,17 @@
 package router
 
 import (
-	"net/http"
+	"app-log/app/http/controller"
 
 	"github.com/gin-gonic/gin"
 )
 
-func LoadTest(e *gin.Engine) {
-	// e.GET("/ping", controller.GetUser)
-	// e.POST("/user", controller.RegisterUser)
-	// api := e.Group("api")
-	// {
-	// 	api.POST("/login", controller.Login)
-
-	// 	// 用户相关
-	// 	user := api.Group("/user")
-	// 	{
-	// 		user.GET("/info", controller.Info)
-	// 	}
-
-	// 	buildings := api.Group("/buildings")
-	// 	{
-	// 		buildings.GET("/list", controller.DictBuildingsList)
-	// 	}
-
-	e.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "hello World!")
-	})
+func LoadLog(e *gin.Engine) {
+	api := e.Group("api")
+	{
+		log := api.Group("log")
+		{
+			log.GET("/index", controller.GetUser)
+		}
+	}
 }
