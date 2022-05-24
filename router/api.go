@@ -11,7 +11,9 @@ func LoadLog(e *gin.Engine) {
 	{
 		log := api.Group("log")
 		{
-			log.GET("/index", controller.GetUser)
+			// log.GET("/index", controller.GetUser)
+			// log.GET("/test", controller.Test)
+			log.GET("/test2", controller.TestLog)
 		}
 	}
 }

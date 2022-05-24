@@ -1,50 +1,25 @@
 package controller
 
 import (
-	"context"
-	"fmt"
+	mongoDb "app-log/pkg/database/mongoDb"
 	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func Test(c *gin.Context) {
-	// Set client options
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	// Connect to MongoDB
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Check the connection
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Connected to MongoDB!")
-}
+func TestC(c *gin.Context) {
+	uri := "mongodb://root:123456@127.0.0.1:27017/admin"
+	name := "Test"
+	maxTime := time.Duration(2) // 链接超时时间
+	// table := "test"             // 表名
 
-func ConnectToDB(uri, name string, timeout time.Duration) (*mongo.Database, error) {
-	// 设置连接超时时间
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-	// 通过传进来的uri连接相关的配置
-	o := options.Client().ApplyURI(uri)
-	// 发起链接
-	client, err := mongo.Connect(ctx, o)
+	_, err := mongoDb.ConnectToDB(uri, name, maxTime)
+
 	if err != nil {
-		log.Fatal(err)
-		return nil, err
+		log.Println("链接数据库有误!")
+	} else {
+		log.Println("链接成功!")
 	}
-	// 判断服务是不是可用
-	if err = client.Ping(context.Background(), readpref.Primary()); err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-	// 返回 client
-	return client.Database(name), nil
+	mongoDb.Count()
 }
