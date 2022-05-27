@@ -13,7 +13,8 @@ func LoadLog(e *gin.Engine) {
 		{
 			// log.GET("/index", controller.GetUser)
 			// log.GET("/test", controller.Test)
-			log.GET("/test2", controller.TestLog)
+			// log.GET("/test2", controller.TestLog)
+			log.GET("/test2", controller.TestC)
 		}
 	}
 }

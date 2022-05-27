@@ -2,6 +2,7 @@ package mongoDB
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,6 +13,10 @@ import (
 type Table struct{}
 
 var collection *mongo.Collection // collection 话柄
+
+// func init() {
+// 	var collection *mongo.Collection // collection 话柄
+// }
 
 func AddOne(t *Table) {
 	objId, err := collection.InsertOne(context.TODO(), &t)
@@ -100,9 +105,10 @@ func GetList(m bson.M) {
 }
 
 func Count() {
-	count, err := collection.CountDocuments(context.Background(), bson.D{})
-	if err != nil {
-		log.Fatal(count)
-	}
-	log.Println("collection.CountDocuments:", count)
+	fmt.Printf("%v", collection)
+	// count, err := collection.CountDocuments(context.Background(), bson.D{})
+	// if err != nil {
+	// 	log.Fatal(count)
+	// }
+	// log.Println("collection.CountDocuments:", count)
 }
