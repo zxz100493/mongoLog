@@ -2,7 +2,6 @@ package mongoDB
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,16 +9,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Table struct{}
-
-var collection *mongo.Collection // collection 话柄
+type Mongo struct {
+	Collection *mongo.Collection // Collection 话柄
+	Model      interface{}       // model
+}
 
 // func init() {
-// 	var collection *mongo.Collection // collection 话柄
+// 	var Collection *mongo.Collection // Collection 话柄
 // }
 
-func AddOne(t *Table) {
-	objId, err := collection.InsertOne(context.TODO(), &t)
+func AddOne(mo *Mongo) {
+	objId, err := mo.Collection.InsertOne(context.TODO(), &mo.Model)
 	if err != nil {
 		log.Printf("%v", err)
 		return
@@ -27,35 +27,35 @@ func AddOne(t *Table) {
 	log.Println("插入成功", objId)
 }
 
-func Del(m bson.M) {
-	deleteResult, err := collection.DeleteOne(context.Background(), m)
+func Del(m bson.M, mo *Mongo) {
+	deleteResult, err := mo.Collection.DeleteOne(context.Background(), m)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("collection.DeleteOne:", deleteResult)
+	log.Println("Collection.DeleteOne:", deleteResult)
 }
 
-func EditOne(t *Table, m bson.M) {
-	update := bson.M{"$set": t}
-	updateResult, err := collection.UpdateOne(context.Background(), m, update)
+func EditOne(m bson.M, mo *Mongo) {
+	update := bson.M{"$set": mo.Model}
+	updateResult, err := mo.Collection.UpdateOne(context.Background(), m, update)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("collection.UpdateOne:", updateResult)
+	log.Println("Collection.UpdateOne:", updateResult)
 }
 
-func Update(t *Table, m bson.M) {
-	update := bson.M{"$set": t}
+func Update(m bson.M, mo *Mongo) {
+	update := bson.M{"$set": mo.Model}
 	updateOpts := options.Update().SetUpsert(true)
-	updateResult, err := collection.UpdateOne(context.Background(), m, update, updateOpts)
+	updateResult, err := mo.Collection.UpdateOne(context.Background(), m, update, updateOpts)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("collection.UpdateOne:", updateResult)
+	log.Println("Collection.UpdateOne:", updateResult)
 }
 
-func Sectle(m bson.M) {
-	cur, err := collection.Find(context.Background(), m)
+func Sectle(m bson.M, mo *Mongo) {
+	cur, err := mo.Collection.Find(context.Background(), m)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,51 +64,51 @@ func Sectle(m bson.M) {
 	}
 
 	for cur.Next(context.Background()) {
-		var t Table
+		var t struct{}
 		if err = cur.Decode(&t); err != nil {
 			log.Fatal(err)
 		}
-		log.Println("collection.Find name=primitive.Regex{xx}: ", t)
+		log.Println("Collection.Find name=primitive.Regex{xx}: ", t)
 	}
 	_ = cur.Close(context.Background())
 }
 
-func GetOne(m bson.M) {
-	var one Table
-	err := collection.FindOne(context.Background(), m).Decode(&one)
+func GetOne(m bson.M, mo *Mongo) {
+	// var one Mongo
+	err := mo.Collection.FindOne(context.Background(), m).Decode(&mo.Model)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("collection.FindOne: ", one)
+	log.Println("Collection.FindOne: ", mo.Model)
 }
 
-func GetList(m bson.M) {
-	cur, err := collection.Find(context.Background(), m)
+func GetList(m bson.M, mo *Mongo) {
+	cur, err := mo.Collection.Find(context.Background(), m)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
 	}
-	var all []*Table
+	var all []struct{}
 	err = cur.All(context.Background(), &all)
 	if err != nil {
 		log.Fatal(err)
 	}
 	_ = cur.Close(context.Background())
 
-	log.Println("collection.Find curl.All: ", all)
+	log.Println("Collection.Find curl.All: ", all)
 	for _, one := range all {
 		// log.Println("Id:", one.Id, " - name:", one.Name, " - level:", one.Level)
 		log.Println(one)
 	}
 }
 
-func Count() {
-	fmt.Printf("%v", collection)
-	// count, err := collection.CountDocuments(context.Background(), bson.D{})
-	// if err != nil {
-	// 	log.Fatal(count)
-	// }
-	// log.Println("collection.CountDocuments:", count)
+func Count(mo *Mongo) {
+	// fmt.Printf("%v", mo.Collection)
+	count, err := mo.Collection.CountDocuments(context.Background(), bson.D{})
+	if err != nil {
+		log.Fatal(count)
+	}
+	log.Println("Collection.CountDocuments:", count)
 }
