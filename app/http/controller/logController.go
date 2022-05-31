@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func TestC(c *gin.Context) {
@@ -36,5 +37,8 @@ func TestC(c *gin.Context) {
 	} else {
 		log.Println("链接成功!")
 	}
+
+	mongoDb.AddOne(initMongo)
 	mongoDb.Count(initMongo)
+	mongoDb.GetList(bson.M{"level": 55}, initMongo)
 }
