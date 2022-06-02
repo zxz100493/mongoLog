@@ -10,10 +10,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Mongo struct {
-	Collection *mongo.Collection // Collection 话柄
-	Model      interface{}
-}
+type (
+	Mongo struct {
+		Collection *mongo.Collection // Collection 话柄
+		Model      interface{}
+	}
+	TestModel model.Test
+)
 
 func GetList(m bson.M, mo *Mongo) {
 	cur, err := mo.Collection.Find(context.Background(), m)
@@ -23,7 +26,8 @@ func GetList(m bson.M, mo *Mongo) {
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
 	}
-	var all []*model.Test
+	// var all []*model.Test
+	var all []*TestModel
 	// var all []*Mongo
 	err = cur.All(context.Background(), &all)
 	if err != nil {

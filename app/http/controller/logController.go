@@ -18,7 +18,7 @@ func TestC(c *gin.Context) {
 	type Test model.Test
 
 	db, err := mongoDb.ConnectToDB(uri, name, maxTime)
-	collection = db.Collection(table)
+	collection := db.Collection(table)
 	type NewStruct = mongoDb.Mongo
 
 	var initMongo = new(NewStruct)
