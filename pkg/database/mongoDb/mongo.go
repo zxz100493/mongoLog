@@ -1,6 +1,7 @@
 package mongoDB
 
 import (
+	"app-log/app/model"
 	"context"
 	"log"
 
@@ -11,12 +12,31 @@ import (
 
 type Mongo struct {
 	Collection *mongo.Collection // Collection 话柄
-	Model      interface{}       // model
+	Model      interface{}
 }
 
-// func init() {
-// 	var Collection *mongo.Collection // Collection 话柄
-// }
+func GetList(m bson.M, mo *Mongo) {
+	cur, err := mo.Collection.Find(context.Background(), m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+	var all []*model.Test
+	// var all []*Mongo
+	err = cur.All(context.Background(), &all)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_ = cur.Close(context.Background())
+
+	log.Println("Collection.Find curl.All: ", all)
+	for _, one := range all {
+		// log.Println("Id:", one.Id, " - name:", one.Name, " - level:", one.Level)
+		log.Println(one)
+	}
+}
 
 func AddOne(mo *Mongo) {
 	objId, err := mo.Collection.InsertOne(context.TODO(), &mo.Model)
@@ -80,28 +100,6 @@ func GetOne(m bson.M, mo *Mongo) {
 		log.Fatal(err)
 	}
 	log.Println("Collection.FindOne: ", mo.Model)
-}
-
-func GetList(m bson.M, mo *Mongo) {
-	cur, err := mo.Collection.Find(context.Background(), m)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := cur.Err(); err != nil {
-		log.Fatal(err)
-	}
-	var all []struct{}
-	err = cur.All(context.Background(), &all)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_ = cur.Close(context.Background())
-
-	log.Println("Collection.Find curl.All: ", all)
-	for _, one := range all {
-		// log.Println("Id:", one.Id, " - name:", one.Name, " - level:", one.Level)
-		log.Println(one)
-	}
 }
 
 func Count(mo *Mongo) {

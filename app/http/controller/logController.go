@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"app-log/app/model"
 	mongoDb "app-log/pkg/database/mongoDb"
 	"log"
 	"time"
@@ -14,16 +15,13 @@ func TestC(c *gin.Context) {
 	name := "Test"
 	maxTime := time.Duration(2) // 链接超时时间
 	table := "test"             // 表名
-	type Test struct {
-		Id    string `bson:"_id"`
-		Name  string `bson:"name"`
-		Level int    `bson:"level"`
-	}
+	type Test model.Test
 
 	db, err := mongoDb.ConnectToDB(uri, name, maxTime)
 	collection = db.Collection(table)
+	type NewStruct = mongoDb.Mongo
 
-	var initMongo = new(mongoDb.Mongo)
+	var initMongo = new(NewStruct)
 	initMongo.Collection = collection
 
 	initMongo.Model = Test{
@@ -38,7 +36,7 @@ func TestC(c *gin.Context) {
 		log.Println("链接成功!")
 	}
 
-	mongoDb.AddOne(initMongo)
+	// mongoDb.AddOne(initMongo)
 	mongoDb.Count(initMongo)
 	mongoDb.GetList(bson.M{"level": 55}, initMongo)
 }
