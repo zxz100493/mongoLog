@@ -2,7 +2,9 @@ package controller
 
 import (
 	"app-log/app/model"
+	"app-log/config"
 	mongoDb "app-log/pkg/database/mongoDb"
+	"fmt"
 	"log"
 	"time"
 
@@ -11,7 +13,15 @@ import (
 )
 
 func TestC(c *gin.Context) {
-	uri := "mongodb://root:123456@127.0.0.1:27017/admin"
+	// log.Println(&config.Instance.Mysql.User)
+	sqlConfig := config.Instance.Mysql
+	log.Println(sqlConfig.User)
+	return
+	user := "root"
+	// uri := fmt.Sprintf("mongodb://%s:123456@127.0.0.1:27017/admin", config.Instance.Mysql.User)
+	uri := fmt.Sprintf("mongodb://%s:123456@127.0.0.1:27017/admin", user)
+
+	log.Println(uri)
 	name := "Test"
 	maxTime := time.Duration(2) // 链接超时时间
 	table := "test"             // 表名
