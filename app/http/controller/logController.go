@@ -2,32 +2,41 @@ package controller
 
 import (
 	"app-log/app/model"
-	"app-log/config"
 	mongoDb "app-log/pkg/database/mongoDb"
 	"fmt"
 	"log"
-	"time"
+	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+type LogStruct struct {
+	Datetime     string `json:"datetime"`
+	Timestamp    string `json:"timestamp"`
+	UniqueRemark string `json:"unique_remark"`
+	CnRemark     string `json:"cn_remark"`
+	Project      string `json:"project"`
+	UserId       string `json:"user_id"`
+	Path         string `json:"path"`
+	Module       string `json:"module"`
+	Host         string `json:"host"`
+	Url          string `json:"url"`
+	Level        string `json:"level"`
+	Context      string `json:"context"`
+	Backtrace    string `json:"backtrace"`
+	PostData     string `json:"postData"`
+	GetData      string `json:"getData"`
+}
+
 func TestC(c *gin.Context) {
 	// log.Println(&config.Instance.Mysql.User)
-	sqlConfig := config.Instance.Mysql
-	log.Println(sqlConfig.User)
-	return
-	user := "root"
-	// uri := fmt.Sprintf("mongodb://%s:123456@127.0.0.1:27017/admin", config.Instance.Mysql.User)
-	uri := fmt.Sprintf("mongodb://%s:123456@127.0.0.1:27017/admin", user)
-
-	log.Println(uri)
 	name := "Test"
-	maxTime := time.Duration(2) // 链接超时时间
-	table := "test"             // 表名
+	table := "test" // 表名
 	type Test model.Test
 
-	db, err := mongoDb.ConnectToDB(uri, name, maxTime)
+	db, err := mongoDb.ConnectToDB(name)
 	collection := db.Collection(table)
 	type NewStruct = mongoDb.Mongo
 
@@ -49,4 +58,38 @@ func TestC(c *gin.Context) {
 	// mongoDb.AddOne(initMongo)
 	mongoDb.Count(initMongo)
 	mongoDb.GetList(bson.M{"level": 55}, initMongo)
+
+	for _, file := range ScanDir() {
+		fmt.Println(file)
+	}
+}
+
+// scan the directort
+func ScanDir() (files []string) {
+	dir := "/home/zxz/dnmp/www/rrzuji/console/logV3"
+	err := filepath.Walk(dir, visit(&files))
+	if err != nil {
+		panic(err)
+	}
+	return files
+	// for _, file := range files {
+	// fmt.Println(file)
+	// }
+}
+
+func visit(files *[]string) filepath.WalkFunc {
+	return func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatal(err)
+		}
+		s, err := os.Stat(path)
+		if err != nil {
+			return nil
+		}
+
+		if !s.IsDir() {
+			*files = append(*files, path)
+		}
+		return nil
+	}
 }

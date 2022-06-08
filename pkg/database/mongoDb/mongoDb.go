@@ -1,7 +1,9 @@
 package mongoDB
 
 import (
+	"app-log/config"
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,7 +12,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func ConnectToDB(uri, name string, timeout time.Duration) (*mongo.Database, error) {
+func ConnectToDB(name string) (*mongo.Database, error) {
+	MongoConfig := config.Instance.MongoDB
+	user := MongoConfig.User
+	port := MongoConfig.Port
+	host := MongoConfig.Host
+	pwd := MongoConfig.Pwd
+	timeout := time.Duration(2) // 链接超时时间
+
+	// uri := fmt.Sprintf("mongodb://%s:123456@127.0.0.1:27017/admin", config.Instance.Mysql.User)
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/admin", user, pwd, host, port)
 	// 设置连接超时时间
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

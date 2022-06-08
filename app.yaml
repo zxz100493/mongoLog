@@ -13,7 +13,8 @@ redis:
   pwd:
   port: 6379
 
-mongoDb:
+MongoDB:
   host: 127.0.0.1
-  pwd:
+  pwd: 123456
   port: 27017
+  user: root

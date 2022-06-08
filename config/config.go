@@ -17,6 +17,12 @@ type Config struct {
 		User string `yaml:"User"`
 		Pwd  string `yaml:"Pwd"`
 	} `yaml:"Mysql"`
+	MongoDB struct {
+		Host string `yaml:"Host"`
+		Port string `yaml:"Port"`
+		User string `yaml:"User"`
+		Pwd  string `yaml:"Pwd"`
+	} `yaml:"MongoDB"`
 }
 
 func Init(filename string) *Config {
