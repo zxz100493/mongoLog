@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -61,7 +63,16 @@ func TestC(c *gin.Context) {
 
 	for _, file := range ScanDir() {
 		fmt.Println(file)
+		paths, fileName := filepath.Split(file)
+		extension := path.Ext(file)
+		// fileName = strings.Replace(fileName, extension, "", -1)
+		fmt.Println(fileName)
+		fmt.Println(extension)
+		fmt.Println(paths)
+
+		Readfile(fileName, paths)
 	}
+
 }
 
 // scan the directort
@@ -92,4 +103,21 @@ func visit(files *[]string) filepath.WalkFunc {
 		}
 		return nil
 	}
+}
+
+func Readfile(name, dir string) (LogData *LogStruct) {
+	config := viper.New()
+	config.SetConfigName(name) // name of config file (without extension)
+	// config.SetConfigType(extension) // REQUIRED if the config file does not have the extension in the name
+	config.AddConfigPath(dir) // optionally look for config in the working directory
+	err := config.ReadInConfig()
+
+	if err != nil { // Handle errors reading the config file
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+
+	if err := config.Unmarshal(LogData); err != nil {
+		fmt.Println(err)
+	}
+	return LogData
 }
