@@ -20,7 +20,7 @@ func main() {
 		panic(err)
 	}
 	config.Init(fmt.Sprintf("%s/../", path))
-
+	// fmt.Printf("%s/../", path)
 	if err := r.Run(":8888"); err != nil {
 		fmt.Println("startup service failed, err:%v\n", err)
 	}
