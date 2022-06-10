@@ -81,3 +81,49 @@ package controller
 // 	}
 // 	log.Println("录入数据成功，objId:", objId)
 // }
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Post struct { //带结构标签，反引号来包围字符串
+	Id      int       `json:"id"`
+	Content string    `json:"content"`
+	Author  Author    `json:"author"`
+	Comment []Comment `json:"comments"`
+}
+
+type Author struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type Comment struct {
+	Id      int    `json:"id"`
+	Content string `json:"content"`
+	Author  string `json:"author"`
+}
+
+func CD(c *gin.Context) {
+	jsonFile, err := os.Open("//home/zxz/gogo/go-mongo-log/app/http/controller/test.json")
+	if err != nil {
+		fmt.Println("error opening json file")
+		return
+	}
+	defer jsonFile.Close()
+
+	jsonData, err := ioutil.ReadAll(jsonFile)
+	fmt.Printf("%s", jsonData)
+	if err != nil {
+		fmt.Println("error reading json file")
+		return
+	}
+	var post Post
+	json.Unmarshal(jsonData, &post)
+	fmt.Println(post)
+}

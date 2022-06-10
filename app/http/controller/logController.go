@@ -3,10 +3,11 @@ package controller
 import (
 	"app-log/app/model"
 	mongoDb "app-log/pkg/database/mongoDb"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -63,14 +64,16 @@ func TestC(c *gin.Context) {
 
 	for _, file := range ScanDir() {
 		fmt.Println(file)
-		paths, fileName := filepath.Split(file)
-		extension := path.Ext(file)
-		// fileName = strings.Replace(fileName, extension, "", -1)
-		fmt.Println(fileName)
-		fmt.Println(extension)
-		fmt.Println(paths)
+		// paths, fileName := filepath.Split(file)
+		// extension := path.Ext(file)
+		// // fileName = strings.Replace(fileName, extension, "", -1)
+		// fmt.Println(fileName)
+		// fmt.Println(extension)
+		// fmt.Println(paths)
 
-		Readfile(fileName, paths)
+		// Readfile(fileName, paths)
+		res := ReadSettingsFromFile(file)
+		fmt.Printf("%v", res)
 	}
 
 }
@@ -107,9 +110,11 @@ func visit(files *[]string) filepath.WalkFunc {
 
 func Readfile(name, dir string) (LogData *LogStruct) {
 	config := viper.New()
-	config.SetConfigName(name) // name of config file (without extension)
-	// config.SetConfigType(extension) // REQUIRED if the config file does not have the extension in the name
-	config.AddConfigPath(dir) // optionally look for config in the working directory
+	// config.SetConfigName(name) // name of config file (without extension)
+	config.SetConfigName("test.yaml") // name of config file (without extension)
+
+	config.SetConfigType("yaml")                                            // REQUIRED if the config file does not have the extension in the name
+	config.AddConfigPath("/home/zxz/dnmp/www/rrzuji/console/logV3/202203/") // optionally look for config in the working directory
 	err := config.ReadInConfig()
 
 	if err != nil { // Handle errors reading the config file
@@ -120,4 +125,19 @@ func Readfile(name, dir string) (LogData *LogStruct) {
 		fmt.Println(err)
 	}
 	return LogData
+}
+
+func ReadSettingsFromFile(settingFilePath string) (config *LogStruct) {
+	jsonFile, err := os.Open(settingFilePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer jsonFile.Close()
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	fmt.Printf("%s", byteValue)
+	err = json.Unmarshal(byteValue, &config)
+	if err != nil {
+		log.Panic(err)
+	}
+	return config
 }

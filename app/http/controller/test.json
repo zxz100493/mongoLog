@@ -1,0 +1,21 @@
+
+{
+    "id": 1,
+    "content": "hello golang",
+    "author": {
+      "id": 2,
+      "name": "miller Fan"
+    },
+    "comments": [
+      {
+        "id": 3,
+        "content": "Have a good night",
+        "author": "屈原"
+      },
+      {
+        "id": 4,
+        "content": "道德经",
+        "author": "老子"
+      }
+    ]
+}
