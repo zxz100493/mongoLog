@@ -3,35 +3,35 @@ package controller
 import (
 	"app-log/app/model"
 	mongoDb "app-log/pkg/database/mongoDb"
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-type LogStruct struct {
-	Datetime     string `json:"datetime"`
-	Timestamp    string `json:"timestamp"`
-	UniqueRemark string `json:"unique_remark"`
-	CnRemark     string `json:"cn_remark"`
-	Project      string `json:"project"`
-	UserId       string `json:"user_id"`
-	Path         string `json:"path"`
-	Module       string `json:"module"`
-	Host         string `json:"host"`
-	Url          string `json:"url"`
-	Level        string `json:"level"`
-	Context      string `json:"context"`
-	Backtrace    string `json:"backtrace"`
-	PostData     string `json:"postData"`
-	GetData      string `json:"getData"`
-}
+// type LogStruct struct {
+// 	Datetime     string      `json:"datetime"`
+// 	Timestamp    int32       `json:"timestamp"`
+// 	UniqueRemark string      `json:"unique_remark"`
+// 	CnRemark     string      `json:"cn_remark"`
+// 	Project      string      `json:"project"`
+// 	UserId       int32       `json:"user_id"`
+// 	Path         string      `json:"path"`
+// 	Module       string      `json:"module"`
+// 	Host         string      `json:"host"`
+// 	Url          string      `json:"url"`
+// 	Level        string      `json:"level"`
+// 	Context      interface{} `json:"context"`
+// 	Backtrace    interface{} `json:"backtrace"`
+// 	PostData     interface{} `json:"postData"`
+// 	GetData      interface{} `json:"getData"`
+// }
+type LogStruct = model.LogStruct
 
 func TestC(c *gin.Context) {
 	// log.Println(&config.Instance.Mysql.User)
@@ -46,11 +46,11 @@ func TestC(c *gin.Context) {
 	var initMongo = new(NewStruct)
 	initMongo.Collection = collection
 
-	initMongo.Model = Test{
-		Id:    "1",
-		Name:  "zngw",
-		Level: 55,
-	}
+	// initMongo.Model = Test{
+	// 	Id:    "1",
+	// 	Name:  "zngw",
+	// 	Level: 55,
+	// }
 
 	if err != nil {
 		log.Println("链接数据库有误!")
@@ -59,21 +59,16 @@ func TestC(c *gin.Context) {
 	}
 
 	// mongoDb.AddOne(initMongo)
-	mongoDb.Count(initMongo)
-	mongoDb.GetList(bson.M{"level": 55}, initMongo)
+	// mongoDb.Count(initMongo)
+	// mongoDb.GetList(bson.M{"level": 55}, initMongo)
 
 	for _, file := range ScanDir() {
 		fmt.Println(file)
 		// paths, fileName := filepath.Split(file)
-		// extension := path.Ext(file)
-		// // fileName = strings.Replace(fileName, extension, "", -1)
-		// fmt.Println(fileName)
-		// fmt.Println(extension)
-		// fmt.Println(paths)
-
-		// Readfile(fileName, paths)
 		res := ReadSettingsFromFile(file)
 		fmt.Printf("%v", res)
+		initMongo.Model = *res
+		mongoDb.AddOne(initMongo)
 	}
 
 }
@@ -108,6 +103,27 @@ func visit(files *[]string) filepath.WalkFunc {
 	}
 }
 
+func ReadSettingsFromFile(settingFilePath string) (config *LogStruct) {
+	jsonFile, err := os.Open(settingFilePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer jsonFile.Close()
+	// byteValue, _ := ioutil.ReadAll(jsonFile)
+	scanner := bufio.NewScanner(jsonFile)
+	for scanner.Scan() {
+		// var byteValue []byte
+		byteValue := []byte(scanner.Text())
+		// fmt.Println("-----------------------")
+		err = json.Unmarshal(byteValue, &config)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+	return config
+}
+
+// not used
 func Readfile(name, dir string) (LogData *LogStruct) {
 	config := viper.New()
 	// config.SetConfigName(name) // name of config file (without extension)
@@ -125,19 +141,4 @@ func Readfile(name, dir string) (LogData *LogStruct) {
 		fmt.Println(err)
 	}
 	return LogData
-}
-
-func ReadSettingsFromFile(settingFilePath string) (config *LogStruct) {
-	jsonFile, err := os.Open(settingFilePath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	fmt.Printf("%s", byteValue)
-	err = json.Unmarshal(byteValue, &config)
-	if err != nil {
-		log.Panic(err)
-	}
-	return config
 }

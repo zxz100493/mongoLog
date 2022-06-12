@@ -13,7 +13,8 @@ import (
 type (
 	Mongo struct {
 		Collection *mongo.Collection // Collection 话柄
-		Model      interface{}
+		// Model      interface{}
+		Model model.LogStruct
 	}
 	TestModel model.Test
 )
