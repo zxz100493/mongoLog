@@ -52,6 +52,15 @@ func AddOne(mo *Mongo) {
 	log.Println("插入成功", objId)
 }
 
+func AddMany(mo *Mongo, arr []interface{}) {
+	objId, err := mo.Collection.InsertMany(context.TODO(), arr)
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+	log.Println("插入成功", objId)
+}
+
 func Del(m bson.M, mo *Mongo) {
 	deleteResult, err := mo.Collection.DeleteOne(context.Background(), m)
 	if err != nil {

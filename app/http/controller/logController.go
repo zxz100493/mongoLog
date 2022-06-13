@@ -65,10 +65,9 @@ func TestC(c *gin.Context) {
 	for _, file := range ScanDir() {
 		fmt.Println(file)
 		// paths, fileName := filepath.Split(file)
-		res := ReadSettingsFromFile(file)
+		res := ReadSettingsFromFile(file, &model.LogStruct{})
 		fmt.Printf("%v", res)
-		initMongo.Model = *res
-		mongoDb.AddOne(initMongo)
+		mongoDb.AddMany(initMongo, res)
 	}
 
 }
@@ -103,7 +102,7 @@ func visit(files *[]string) filepath.WalkFunc {
 	}
 }
 
-func ReadSettingsFromFile(settingFilePath string) (config *LogStruct) {
+func ReadSettingsFromFile(settingFilePath string, config *LogStruct) (arr []interface{}) {
 	jsonFile, err := os.Open(settingFilePath)
 	if err != nil {
 		fmt.Println(err)
@@ -114,13 +113,15 @@ func ReadSettingsFromFile(settingFilePath string) (config *LogStruct) {
 	for scanner.Scan() {
 		// var byteValue []byte
 		byteValue := []byte(scanner.Text())
-		// fmt.Println("-----------------------")
+		fmt.Println("-------------")
+		fmt.Printf("%s\n", byteValue)
 		err = json.Unmarshal(byteValue, &config)
-		if err != nil {
-			log.Panic(err)
-		}
+		arr = append(arr, *config)
+		// if err != nil {
+		// log.Panic(err)
+		// }
 	}
-	return config
+	return arr
 }
 
 // not used
