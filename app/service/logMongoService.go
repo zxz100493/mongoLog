@@ -9,7 +9,7 @@ type mongoLogSvc struct {
 	logRepo repo.ILogRepo
 }
 
-func NewMongoSvc(a repo.ILogRepo) *mongoLogSvc {
+func NewMongoSvc(a repo.ILogRepo) repo.ILogRepo {
 	return &mongoLogSvc{
 		logRepo: a,
 	}
