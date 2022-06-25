@@ -19,9 +19,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	config.Init(fmt.Sprintf("%s/../", path))
+	config.Init(fmt.Sprintf("%s/", path))
+	// fmt.Printf("%s/../", path)
 	// fmt.Printf("%s/../", path)
 	if err := r.Run(":8888"); err != nil {
 		fmt.Printf("startup service failed, err:%s\n", err)
 	}
+	fmt.Println("startup service")
 }
