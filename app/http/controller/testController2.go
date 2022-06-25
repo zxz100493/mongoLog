@@ -17,7 +17,7 @@ func GetData(c *gin.Context) {
 	initSvc := service.NewMongoSvc(initRepo)
 
 	// 调用
-	initSvc.Find()
-	initSvc.List()
+	// initSvc.Find()
 	initSvc.Count()
+	// initSvc.List()
 }
