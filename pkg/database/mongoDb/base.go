@@ -2,8 +2,10 @@ package mongoDB
 
 import (
 	"app-log/app/repo"
+	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -21,4 +23,10 @@ func (m *mongoLogRepository) List() {
 
 func (m *mongoLogRepository) Find() {
 	fmt.Println("i am mongo db find")
+}
+
+func (m *mongoLogRepository) Count() {
+	// res, _ := m.collection.Find(context.Background(), filter)
+	res, _ := m.collection.CountDocuments(context.Background(), bson.D{})
+	fmt.Println(res)
 }

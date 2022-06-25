@@ -24,3 +24,8 @@ func (a *mongoLogSvc) Find() {
 	a.logRepo.Find()
 	fmt.Println("i am svc find")
 }
+
+func (a *mongoLogSvc) Count() {
+	a.logRepo.Count()
+	fmt.Println("i am svc find")
+}
