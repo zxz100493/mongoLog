@@ -1,19 +1,21 @@
 package controller
 
 import (
-	"app-log/app/repo"
+	"app-log/app/service"
+	mongoDB "app-log/pkg/database/mongoDb"
+
+	"github.com/gin-gonic/gin"
 )
 
-var logService repo.ILogRepo
+func GetData(c *gin.Context) {
 
-// func init() {
-// 	logService = service.NewMongoSvc{logService}
-// }
+	name := "Test"
+	table := "test" // 表名
+	db, _ := mongoDB.ConnectToDB(name)
+	collection := db.Collection(table)
+	initRepo := mongoDB.NewMongoRepository(collection)
+	initSvc := service.NewMongoSvc(initRepo)
 
-// func newService()  {
-
-// }
-
-func GetData() {
-	logService.Find()
+	// 调用
+	initSvc.Find()
 }

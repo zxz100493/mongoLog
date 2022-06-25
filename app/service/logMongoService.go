@@ -16,10 +16,11 @@ func NewMongoSvc(a repo.ILogRepo) repo.ILogRepo {
 }
 
 func (a *mongoLogSvc) List() {
-	a.Find()
+	a.logRepo.List()
 	fmt.Println("i am svc List")
 }
 
 func (a *mongoLogSvc) Find() {
+	a.logRepo.Find()
 	fmt.Println("i am svc find")
 }
