@@ -1,3 +1,4 @@
 .vscode
 .air.conf
 .air.toml
+/resource/node_modules
