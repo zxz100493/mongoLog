@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
-createApp(App).use(store).use(store).use(router).mount('#app')
+import 'element-plus/theme-chalk/dark/css-vars.css'
+createApp(App).use(store).use(store).use(router).use(ElementPlus).mount('#app')
