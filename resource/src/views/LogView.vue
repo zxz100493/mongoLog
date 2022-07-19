@@ -60,7 +60,8 @@
 
 <script lang="ts" setup>
 import { reactive } from 'vue'
-
+import API from '@/api/LogApi.js'
+// import { axios } from 'axios'
 // do not use same name with ref
 const form = reactive({
   name: '',
@@ -75,12 +76,13 @@ const form = reactive({
 
 const onSubmit = () => {
   console.log('submit!')
+  API.login()
 }
 </script>
 <style>
   .logContainer {
     /* width: 400px; */
-    /* background-color: aquamarine; */
+    background-color:antiquewhite;
     display:flex;
     justify-content: center;
     align-items: center;
