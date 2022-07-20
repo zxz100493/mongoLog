@@ -1,6 +1,6 @@
 'use strict'
 
-import Vue from 'vue'
+// import Vue from 'vue';
 import axios from 'axios'
 
 // Full config:  https://github.com/axios/axios#request-config
@@ -17,11 +17,11 @@ const config = {
 const _axios = axios.create(config)
 
 _axios.interceptors.request.use(
-  function (config) {
+  function (config: any) {
     // Do something before request is sent
     return config
   },
-  function (error) {
+  function (error: any) {
     // Do something with request error
     return Promise.reject(error)
   }
@@ -29,33 +29,44 @@ _axios.interceptors.request.use(
 
 // Add a response interceptor
 _axios.interceptors.response.use(
-  function (response) {
+  function (response: any) {
     // Do something with response data
     return response
   },
-  function (error) {
+  function (error: any) {
     // Do something with response error
     return Promise.reject(error)
   }
 )
 
-Plugin.install = function (Vue, options) {
-  Vue.axios = _axios
-  window.axios = _axios
-  Object.defineProperties(Vue.prototype, {
-    axios: {
-      get () {
-        return _axios
-      }
-    },
-    $axios: {
-      get () {
-        return _axios
-      }
+// Plugin.install = function (Vue, options) {
+//   Vue.axios = _axios
+//   window.axios = _axios
+//   Object.defineProperties(Vue.prototype, {
+//     axios: {
+//       get () {
+//         return _axios
+//       }
+//     },
+//     $axios: {
+//       get () {
+//         return _axios
+//       }
+//     }
+//   })
+// }
+
+// Vue.use(Plugin)
+
+// export default Plugin
+export default {
+  install: function (app: any, options: any) {
+    console.log(options)
+    // add global method
+    app.config.globalProperties.axios = _axios
+    // add global method
+    app.config.globalProperties.$translate = (key: any) => {
+      return key
     }
-  })
+  }
 }
-
-Vue.use(Plugin)
-
-export default Plugin

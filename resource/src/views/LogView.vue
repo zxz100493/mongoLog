@@ -59,9 +59,8 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
-import API from '@/api/LogApi.js'
-// import { axios } from 'axios'
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue'
+
 // do not use same name with ref
 const form = reactive({
   name: '',
@@ -76,8 +75,16 @@ const form = reactive({
 
 const onSubmit = () => {
   console.log('submit!')
-  API.login()
 }
+
+const { proxy }:any = getCurrentInstance()
+
+onMounted(() => {
+  proxy.axios.post('api/Login', { card: 111 })
+    .then((e:any) => {
+      console.log(e)
+    })
+})
 </script>
 <style>
   .logContainer {
