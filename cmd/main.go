@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
-	//r := gin.New()
-	//r.Use(middleware.StatCount())
+	// r := gin.Default()
+	r := gin.New()
+	r.Use(cors.Default())
 
 	router.LoadLog(r)
 	path, err := os.Getwd()

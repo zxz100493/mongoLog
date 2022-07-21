@@ -47,7 +47,7 @@
           <el-radio label="Venue" />
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="Activity form">
+      <el-form-item label="document num">
         <el-input v-model="form.desc" type="textarea" />
       </el-form-item>
       <el-form-item>
@@ -80,9 +80,9 @@ const onSubmit = () => {
 const { proxy }:any = getCurrentInstance()
 
 onMounted(() => {
-  proxy.axios.post('api/Login', { card: 111 })
+  proxy.axios.get('api/log/test3', { card: 111 })
     .then((e:any) => {
-      console.log(e)
+      form.desc = e.data.data
     })
 })
 </script>

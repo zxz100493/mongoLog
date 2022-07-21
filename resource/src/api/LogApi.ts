@@ -20,14 +20,14 @@
 
 // export default API
 
-import { defineComponent, getCurrentInstance } from 'vue';
-export default defineComponent({
-  name: 'Home',
-  mounted(){
-    const { proxy }:any = getCurrentInstance(); //获取上下文实例，ctx=vue2的this
-    proxy.axios.post('api/Login',{card:111}).then((e:any) => {
-    console.log(e)
-    })
-  }
-})
+// import { defineComponent, getCurrentInstance } from 'vue';
+// export default defineComponent({
+//   name: 'Home',
+//   mounted(){
+//     const { proxy }:any = getCurrentInstance(); //获取上下文实例，ctx=vue2的this
+//     proxy.axios.post('api/Login',{card:111}).then((e:any) => {
+//     console.log(e)
+//     })
+//   }
+// })
 
