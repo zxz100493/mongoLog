@@ -14,7 +14,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags="-s -w" -o /app/apps ./
+RUN go build -ldflags="-s -w" -o /app/apps ./cmd
 
 FROM alpine
 
