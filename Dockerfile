@@ -13,7 +13,8 @@ ADD go.sum .
 RUN go mod download
 
 COPY . .
-
+RUN export GO111MODULE=on
+RUN export GOPROXY=https://goproxy.cn
 RUN go build -ldflags="-s -w" -o /app/apps ./cmd
 
 FROM alpine
