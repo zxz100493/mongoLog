@@ -21,6 +21,7 @@ COPY . .
 
 RUN go build -ldflags="-s -w" -o /app/apps ./cmd
 ADD app.yaml /app/
+ADD resource /app/
 
 FROM alpine
 
@@ -31,6 +32,13 @@ ENV TZ Asia/Shanghai
 WORKDIR /app
 COPY --from=builder /app/apps /app/apps
 COPY --from=builder /app/app.yaml /app/app.yaml
+COPY --from=builder /app/service.sh /app/service.sh
+COPY --from=builder /app/resource /app/resource
+RUN chmod +x /app/service.sh
 
-CMD ["./apps"]
+EXPOSE 8080     
+ 
+EXPOSE 3000     
+
+CMD ["/app/service.sh"]
 
