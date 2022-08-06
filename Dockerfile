@@ -21,6 +21,7 @@ COPY . .
 
 RUN go build -ldflags="-s -w" -o /app/apps ./cmd
 ADD app.yaml /app/
+ADD build/service.sh /app/service.sh
 ADD resource /app/
 
 FROM alpine

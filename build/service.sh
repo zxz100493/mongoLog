@@ -1,4 +1,4 @@
-#!bin/sh
+#!/bin/sh
 curl -o- -L https://yarnpkg.com/install.sh | bash   # 安装 yarn
  
 $HOME/.yarn/bin/yarn install                        # 安装 vue 项目依赖包
