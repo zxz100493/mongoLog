@@ -1,0 +1,20 @@
+version: 1.0
+
+AppName: "test"
+
+mysql:
+  host: 127.0.0.1
+  user: root
+  pwd: 123465
+  port: 3306
+
+redis:
+  host: 127.0.0.1
+  pwd:
+  port: 6379
+
+MongoDB:
+  host: 172.17.0.1
+  pwd: 123456
+  port: 27017
+  user: root

@@ -20,14 +20,14 @@ go mod download
 COPY . .
 
 RUN go build -ldflags="-s -w" -o /app/apps ./cmd
-ADD app.yaml /app/
+ADD build/app.yaml /app/
 ADD build/service.sh /app/service.sh
-ADD resource /app/
+COPY resource/ /app/resource
 
 FROM alpine
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-RUN apk update --no-cache && apk add --no-cache ca-certificates tzdata
+RUN apk update --no-cache && apk add --no-cache ca-certificates tzdata curl bash tar yarn
 ENV TZ Asia/Shanghai
 
 WORKDIR /app
@@ -39,7 +39,7 @@ RUN chmod +x /app/service.sh
 
 EXPOSE 8080     
  
-EXPOSE 3000     
+EXPOSE 8888     
 
 CMD ["/app/service.sh"]
 
