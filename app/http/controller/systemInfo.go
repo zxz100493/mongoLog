@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FindOne(c *gin.Context) {
+func GEtSystemInfo(c *gin.Context) {
 
 	// name := "test_mongo"
 	// table := "my_log" // 表名
@@ -22,8 +22,11 @@ func FindOne(c *gin.Context) {
 
 	// 调用
 	// initSvc.Find()
-	initSvc.Count()
+	total := initSvc.Count()
+	data := make(map[string]interface{})
+	data["total"] = total
+	// all document num
+	// all db info
+	// all collection info
 	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": 1})
-	// gin.j
-	// initSvc.List()
 }
