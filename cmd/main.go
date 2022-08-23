@@ -14,6 +14,7 @@ func main() {
 	// r := gin.Default()
 	r := gin.New()
 	r.Use(cors.Default())
+	r.StaticFile("/", "./resource/dist/index.html")
 
 	router.LoadLog(r)
 	path, err := os.Getwd()
