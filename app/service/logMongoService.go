@@ -27,5 +27,5 @@ func (a *mongoLogSvc) Find() {
 
 func (a *mongoLogSvc) Count() {
 	a.logRepo.Count()
-	fmt.Println("i am svc find")
+	fmt.Println("i am svc count")
 }

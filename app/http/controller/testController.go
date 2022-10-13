@@ -86,31 +86,72 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Post struct { //带结构标签，反引号来包围字符串
-	Id      int       `json:"id"`
-	Content string    `json:"content"`
-	Author  Author    `json:"author"`
-	Comment []Comment `json:"comments"`
-}
+// type Post struct { //带结构标签，反引号来包围字符串
+// 	Id      int       `json:"id"`
+// 	Content string    `json:"content"`
+// 	Author  Author    `json:"author"`
+// 	Comment []Comment `json:"comments"`
+// }
 
-type Author struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
+// type Author struct {
+// 	Id   int    `json:"id"`
+// 	Name string `json:"name"`
+// }
+
+// type Comment struct {
+// 	Id      int    `json:"id"`
+// 	Content string `json:"content"`
+// 	Author  string `json:"author"`
+// }
+
+// func CD(c *gin.Context) {
+// 	jsonFile, err := os.Open("//home/zxz/gogo/go-mongo-log/app/http/controller/test.json")
+// 	if err != nil {
+// 		fmt.Println("error opening json file")
+// 		return
+// 	}
+// 	defer jsonFile.Close()
+
+// 	jsonData, err := ioutil.ReadAll(jsonFile)
+// 	fmt.Printf("%s", jsonData)
+// 	if err != nil {
+// 		fmt.Println("error reading json file")
+// 		return
+// 	}
+// 	var post Post
+// 	json.Unmarshal(jsonData, &post)
+// 	fmt.Println(post)
+// }
 
 type Comment struct {
-	Id      int    `json:"id"`
-	Content string `json:"content"`
-	Author  string `json:"author"`
+	Ccontent ContextContent `json:"context"`
+}
+
+type ContextContent struct {
+	NotifyType        string `json:"notify_type"`
+	PayStatus         string `json:"pay_status"`
+	NotifyAppId       string `json:"notify_app_id"`
+	AlipayFundOrderNo string `json:"alipay_fund_order_no"`
+	PayAmount         string `json:"pay_amount"`
+	ZmOrderNo         string `json:"zm_order_no"`
+	OutTransNo        string `json:"out_trans_no"`
+	Channels          string `json:"channel"`
+	OutOrderNo        string `json:"out_order_no"`
+	PayTime           string `json:"pay_time"`
+	SignType          string `json:"sign_type"`
+	Sign              string `json:"sign"`
 }
 
 func CD(c *gin.Context) {
-	jsonFile, err := os.Open("//home/zxz/gogo/go-mongo-log/app/http/controller/test.json")
+	jsonFile, err := os.Open("/home/zxz/codego/mongoLog/app/http/controller/test.json")
 	if err != nil {
 		fmt.Println("error opening json file")
 		return
@@ -118,12 +159,47 @@ func CD(c *gin.Context) {
 	defer jsonFile.Close()
 
 	jsonData, err := ioutil.ReadAll(jsonFile)
-	fmt.Printf("%s", jsonData)
+	// fmt.Printf("%s", jsonData)
 	if err != nil {
 		fmt.Println("error reading json file")
 		return
 	}
-	var post Post
-	json.Unmarshal(jsonData, &post)
-	fmt.Println(post)
+	var comment []Comment
+	json.Unmarshal(jsonData, &comment)
+	// fmt.Println(comment)
+	var num int
+	for _, v := range comment {
+		s := v
+		// fmt.Println(s.Ccontent.SignType)
+		// return
+		data := make(url.Values)
+		data["notify_type"] = []string{s.Ccontent.NotifyType}
+		data["pay_status"] = []string{s.Ccontent.PayStatus}
+		data["notify_app_id"] = []string{s.Ccontent.NotifyAppId}
+		data["alipay_fund_order_no"] = []string{s.Ccontent.AlipayFundOrderNo}
+		data["pay_amount"] = []string{s.Ccontent.PayAmount}
+		data["zm_order_no"] = []string{s.Ccontent.ZmOrderNo}
+		data["out_trans_no"] = []string{s.Ccontent.OutTransNo}
+		data["channel"] = []string{s.Ccontent.Channels}
+		data["out_order_no"] = []string{s.Ccontent.OutOrderNo}
+		data["pay_time"] = []string{s.Ccontent.PayTime}
+		data["sign"] = []string{s.Ccontent.Sign}
+		data["sign_type"] = []string{"RSA2"}
+		// if s.Ccontent.OutOrderNo != "2020032614474456" {
+		// 	continue
+		// }
+		time.Sleep(3 * time.Second)
+		// fmt.Println(data)
+		// fmt.Println(s.Ccontent.SignType)
+		// res, _ := http.PostForm("http://m.rrzuji.com/individual/api/notify", data)
+		res, _ := http.PostForm("", data)
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Printf("%s", body)
+		num++
+		fmt.Println(num)
+
+		fmt.Println("")
+	}
+	fmt.Println("DONE")
 }
