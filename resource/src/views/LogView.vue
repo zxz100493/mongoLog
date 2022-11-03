@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="logContainer">
   <el-form :model="form" label-width="120px">
       <el-form-item label="Activity name">
@@ -94,4 +94,4 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
   }
-</style>
+</style> -->
