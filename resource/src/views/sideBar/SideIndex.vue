@@ -1,13 +1,14 @@
 <template>
   <el-row class="tac">
     <el-col :span="24">
-      <h5 class="mb-2">Log</h5>
+      <h3 class="mb-2">SsLog</h3>
       <el-menu
         active-text-color="#ffd04b"
         background-color="#545c64"
         class="el-menu-vertical-demo"
         default-active="2"
         text-color="#fff"
+        router
         @open="handleOpen"
         @close="handleClose"
       >

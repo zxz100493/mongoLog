@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <el-container>
-      <el-header>Header</el-header>
+      <el-header>Ssloh V1.0.0</el-header>
       <el-container>
         <el-aside width="200px">
           <sideBar />
@@ -14,7 +14,7 @@
     </el-container>
   </div>
 </template>
-<script>
+<script lang="ts">
 import sideBar from '@/views/sideBar/SideIndex.vue'
 export default {
   components: {
