@@ -15,12 +15,12 @@ const routes = [
       {
         path: '/about',
         name: 'about',
-        component: () => import(/* webpackChunkName: "about" */ '../views/AboutViewTwo.vue')
+        component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
       },
       {
-        path: '/about2',
-        name: 'about2',
-        component: () => import(/* webpackChunkName: "about2" */ '../views/AboutView.vue')
+        path: '/systemInfo',
+        name: 'systemInfo',
+        component: () => import(/* webpackChunkName: "about2" */ '../views/systemInfo/systemInfo.vue')
       }
     ]
   }

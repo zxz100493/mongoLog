@@ -37,9 +37,9 @@
           <el-icon><document /></el-icon>
           <span>Navigator Three</span>
         </el-menu-item>
-        <el-menu-item index="/about2">
+        <el-menu-item index="/systemInfo">
           <el-icon><setting /></el-icon>
-          <span>Navigator Four </span>
+          <span>System Info</span>
         </el-menu-item>
       </el-menu>
     </el-col>

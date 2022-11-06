@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <el-container>
-      <el-header>Ssloh V1.0.0</el-header>
+      <el-header>Sslog V1.0.0</el-header>
       <el-container>
         <el-aside width="200px">
           <sideBar />
