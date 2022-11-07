@@ -5,7 +5,7 @@ import (
 	tools "app-log/pkg/tools/json"
 	"context"
 	"fmt"
-	"reflect"
+	"log"
 	"sync"
 	"time"
 
@@ -13,23 +13,13 @@ import (
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/host"
 	"github.com/shirou/gopsutil/v3/mem"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 type mongoObject struct {
 	Client *mongo.Client
-}
-
-type mongoMemory struct {
-	bits     int `bson."bits"`
-	resident int `bson."resident"`
-	virtual  int `bson."virtual"`
-}
-
-type hostInfo struct {
-	uptime   uint64 `json:"uptime"`
-	platform uint64 `json:"platform"`
 }
 
 var (
@@ -44,6 +34,10 @@ func NewMongoObject() *mongoObject {
 	}
 }
 
+// func init(){
+// 	GetConn()
+// }
+
 func GetConn() {
 	if conn == nil {
 		once.Do(func() {
@@ -54,13 +48,7 @@ func GetConn() {
 
 func GetSystemInfo(c *gin.Context) {
 	GetConn()
-	// dbs, err := conn.Client.Version()
-	// dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
-	// ConnectToDB()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// log.Printf("%v", dbs)
+
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	serverStatus, err := conn.Client.Database("admin").RunCommand(
 		ctx,
@@ -70,7 +58,7 @@ func GetSystemInfo(c *gin.Context) {
 		fmt.Println(err)
 	}
 	// fmt.Println(serverStatus)
-	fmt.Println(reflect.TypeOf(serverStatus))
+	// fmt.Println(reflect.TypeOf(serverStatus))
 	version, err := serverStatus.LookupErr("version")
 	if err != nil {
 		fmt.Println(err)
@@ -130,4 +118,13 @@ func formatFileSize(fileSize uint64) (size string) {
 	} else { //if fileSize < (1024 * 1024 * 1024 * 1024 * 1024 * 1024)
 		return fmt.Sprintf("%.2fEB", float64(fileSize)/float64(1024*1024*1024*1024*1024))
 	}
+}
+
+func GetDbInfo(c *gin.Context) {
+	GetConn()
+	dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%v", dbs)
 }
