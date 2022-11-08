@@ -62,6 +62,41 @@
     </el-col>
   </el-row>
   <el-divider />
+  <div class="card-flex">
+    <div>
+      <el-select v-model="value" filterable placeholder="select db">
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+    </div>
+    <div>
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>Card name</span>
+            <el-button class="button" text>Operation button</el-button>
+          </div>
+        </template>
+        <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+      </el-card>
+    </div>
+    <div>
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>Card name</span>
+            <el-button class="button" text>Operation button</el-button>
+          </div>
+        </template>
+        <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+      </el-card>
+    </div>
+  </div>
+  <el-divider />
   <h2>A Simple and Slight Log System For You!</h2>
 </template>
 
@@ -102,6 +137,29 @@ onMounted(() => {
       form.memUsed = data.memUsed
     })
 })
+const value = ref('')
+const options = [
+  {
+    value: 'Option1',
+    label: 'Option1'
+  },
+  {
+    value: 'Option2',
+    label: 'Option2'
+  },
+  {
+    value: 'Option3',
+    label: 'Option3'
+  },
+  {
+    value: 'Option4',
+    label: 'Option4'
+  },
+  {
+    value: 'Option5',
+    label: 'Option5'
+  }
+]
 </script>
 
 <style>
@@ -109,5 +167,27 @@ onMounted(() => {
     display: flex;
     align-items: flex-start;
     margin: 10px 10px 10px;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .box-card {
+    width: 480px;
+  }
+  .card-flex{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
 </style>
