@@ -62,22 +62,22 @@
     </el-col>
   </el-row>
   <el-divider />
-  <div class="card-flex">
-    <div>
-      <el-select v-model="value" filterable placeholder="select db">
+  <div class="dbSelection">
+    <el-select v-model="value" filterable placeholder="select db">
       <el-option
-        v-for="item in options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
+        v-for="item in form.options"
+        :key="item"
+        :label="item"
+        :value="item"
       />
     </el-select>
-    </div>
+  </div>
+  <div class="card-flex">
     <div>
       <el-card class="box-card">
         <template #header>
           <div class="card-header">
-            <span>Card name</span>
+            <span>database info</span>
             <el-button class="button" text>Operation button</el-button>
           </div>
         </template>
@@ -88,7 +88,7 @@
       <el-card class="box-card">
         <template #header>
           <div class="card-header">
-            <span>Card name</span>
+            <span>database statistics</span>
             <el-button class="button" text>Operation button</el-button>
           </div>
         </template>
@@ -113,8 +113,10 @@ const form = reactive({
   platform: '',
   hostUptime: '',
   mem: '',
-  memUsed: ''
+  memUsed: '',
+  options: []
 })
+const value = ref('')
 
 const onSubmit = () => {
   console.log('submit!')
@@ -136,30 +138,12 @@ onMounted(() => {
       form.mem = data.mem
       form.memUsed = data.memUsed
     })
+  proxy.axios.get('api/log/names', { card: 111 })
+    .then((e:any) => {
+      form.options = e.data.data
+    })
 })
-const value = ref('')
-const options = [
-  {
-    value: 'Option1',
-    label: 'Option1'
-  },
-  {
-    value: 'Option2',
-    label: 'Option2'
-  },
-  {
-    value: 'Option3',
-    label: 'Option3'
-  },
-  {
-    value: 'Option4',
-    label: 'Option4'
-  },
-  {
-    value: 'Option5',
-    label: 'Option5'
-  }
-]
+
 </script>
 
 <style>
@@ -187,7 +171,12 @@ const options = [
   }
   .card-flex{
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
+  }
+  .dbSelection{
+    margin-bottom: 10px;
+    display: flex;
+    align-items: left;
   }
 </style>

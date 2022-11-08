@@ -20,6 +20,7 @@ func LoadLog(e *gin.Engine) {
 			// log.GET("/test3", controller.GetData)
 			log.GET("/test2", controller.CD)
 			log.GET("/sys", controller.GetSystemInfo)
+			log.GET("/names", controller.GetDbNameList)
 		}
 	}
 }

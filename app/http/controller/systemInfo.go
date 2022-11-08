@@ -120,7 +120,16 @@ func formatFileSize(fileSize uint64) (size string) {
 	}
 }
 
-func GetDbInfo(c *gin.Context) {
+func GetDbNameList(c *gin.Context) {
+	GetConn()
+	dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": dbs})
+}
+
+func GetDbDetail(c *gin.Context) {
 	GetConn()
 	dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
 	if err != nil {
