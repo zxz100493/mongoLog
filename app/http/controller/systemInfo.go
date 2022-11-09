@@ -131,9 +131,12 @@ func GetDbNameList(c *gin.Context) {
 
 func GetDbDetail(c *gin.Context) {
 	GetConn()
-	dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
+	name := c.Query("name")
+	cls, err := conn.Client.Database(name).ListCollectionNames(c, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("%v", dbs)
+	stat, err := conn.Client.Database(name).Collection("system.sessions").Aggregate(c, bson.M{})
+	fmt.Println(stat)
+	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": cls})
 }

@@ -63,7 +63,7 @@
   </el-row>
   <el-divider />
   <div class="dbSelection">
-    <el-select v-model="value" filterable placeholder="select db">
+    <el-select v-model="form.dbName" @change="getCollections" filterable placeholder="select db">
       <el-option
         v-for="item in form.options"
         :key="item"
@@ -114,8 +114,10 @@ const form = reactive({
   hostUptime: '',
   mem: '',
   memUsed: '',
-  options: []
+  options: [],
+  dbName: ''
 })
+
 const value = ref('')
 
 const onSubmit = () => {
@@ -143,6 +145,18 @@ onMounted(() => {
       form.options = e.data.data
     })
 })
+function getCollections () {
+  const params = {
+    params: {
+      name: form.dbName
+    }
+  }
+  proxy.axios.get('api/log/collection', params)
+    .then((e:any) => {
+      var data = e.data.data
+      console.log(data)
+    })
+}
 
 </script>
 
