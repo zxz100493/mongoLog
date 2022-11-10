@@ -134,9 +134,25 @@ func GetDbDetail(c *gin.Context) {
 	name := c.Query("name")
 	cls, err := conn.Client.Database(name).ListCollectionNames(c, bson.M{})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	stat, err := conn.Client.Database(name).Collection("system.sessions").Aggregate(c, bson.M{})
-	fmt.Println(stat)
-	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": cls})
+
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	var document bson.M
+	err = conn.Client.Database(name).RunCommand(
+		ctx,
+		bsonx.Doc{{"dbStats", bsonx.Int32(1)}},
+	).Decode(&document)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Print(document)
+
+	ret := make(map[string]interface{}, 2)
+	ret["stat"] = document
+	ret["cls"] = cls
+
+	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": ret})
 }

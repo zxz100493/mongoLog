@@ -81,7 +81,7 @@
             <el-button class="button" text>Operation button</el-button>
           </div>
         </template>
-        <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+        <div v-for="item in form.collections" :key="item" class="text item">{{ 'collection: ' + item }}</div>
       </el-card>
     </div>
     <div>
@@ -92,7 +92,7 @@
             <el-button class="button" text>Operation button</el-button>
           </div>
         </template>
-        <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+        <div v-for="v,i in form.dbStat" :key="i" class="text item">{{ i }} : {{ v }}</div>
       </el-card>
     </div>
   </div>
@@ -115,7 +115,10 @@ const form = reactive({
   mem: '',
   memUsed: '',
   options: [],
-  dbName: ''
+  dbName: '',
+  collections: '',
+  dbStat: {},
+  clsStat: {}
 })
 
 const value = ref('')
@@ -154,7 +157,8 @@ function getCollections () {
   proxy.axios.get('api/log/collection', params)
     .then((e:any) => {
       var data = e.data.data
-      console.log(data)
+      form.collections = data.cls
+      form.dbStat = data.stat
     })
 }
 
