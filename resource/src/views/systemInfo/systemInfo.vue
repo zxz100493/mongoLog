@@ -77,22 +77,22 @@
       <el-card class="box-card">
         <template #header>
           <div class="card-header">
-            <span>database info</span>
+            <span>collections</span>
             <el-button class="button" text>Operation button</el-button>
           </div>
         </template>
-        <div v-for="item in form.collections" :key="item" class="text item">{{ 'collection: ' + item }}</div>
+        <div v-for="item in form.collections" :key="item" @click="getClsDetail(item)" class="text item">{{ 'collection: ' + item }}</div>
       </el-card>
     </div>
     <div>
       <el-card class="box-card">
         <template #header>
           <div class="card-header">
-            <span>database statistics</span>
+            <span>{{form.nowStatTips}} statistics</span>
             <el-button class="button" text>Operation button</el-button>
           </div>
         </template>
-        <div v-for="v,i in form.dbStat" :key="i" class="text item">{{ i }} : {{ v }}</div>
+        <div v-for="v,i in form.nowStat" :key="i" class="text item">{{ i }} : {{ v }}</div>
       </el-card>
     </div>
   </div>
@@ -116,9 +116,12 @@ const form = reactive({
   memUsed: '',
   options: [],
   dbName: '',
+  clsName: '',
   collections: '',
   dbStat: {},
-  clsStat: {}
+  clsStat: {},
+  nowStat: {},
+  nowStatTips: 'database'
 })
 
 const value = ref('')
@@ -159,9 +162,25 @@ function getCollections () {
       var data = e.data.data
       form.collections = data.cls
       form.dbStat = data.stat
+      form.nowStat = data.stat
+      form.nowStatTips = 'database'
     })
 }
 
+function getClsDetail (name) {
+  const params = {
+    params: {
+      name: name
+    }
+  }
+  proxy.axios.get('api/log/cls/detail', params)
+    .then((e:any) => {
+      var data = e.data.data
+      form.clsStat = data.stat
+      form.nowStat = data.stat
+      form.nowStatTips = 'collections'
+    })
+}
 </script>
 
 <style>

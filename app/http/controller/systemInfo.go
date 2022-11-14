@@ -156,3 +156,24 @@ func GetDbDetail(c *gin.Context) {
 
 	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": ret})
 }
+
+func GetClsDetail(c *gin.Context) {
+	GetConn()
+	name := c.Query("name")
+	var document bson.M
+	err := conn.Client.Database(name).RunCommand(
+		context.Background(),
+		bson.M{"collStats": name},
+	).Decode(&document)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Print(document)
+
+	ret := make(map[string]interface{}, 2)
+	ret["stat"] = document
+
+	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": ret})
+}

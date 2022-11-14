@@ -22,6 +22,7 @@ func LoadLog(e *gin.Engine) {
 			log.GET("/sys", controller.GetSystemInfo)
 			log.GET("/names", controller.GetDbNameList)
 			log.GET("/collection", controller.GetDbDetail)
+			log.GET("/cls/detail", controller.GetClsDetail)
 		}
 	}
 }
