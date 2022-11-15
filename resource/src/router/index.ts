@@ -20,7 +20,12 @@ const routes = [
       {
         path: '/systemInfo',
         name: 'systemInfo',
-        component: () => import(/* webpackChunkName: "about2" */ '../views/systemInfo/systemInfo.vue')
+        component: () => import(/* webpackChunkName: "systemInfo" */ '../views/systemInfo/systemInfo.vue')
+      },
+      {
+        path: '/dbManager',
+        name: 'dbmanager',
+        component: () => import(/* webpackChunkName: "dbmanager" */ '../views/dbManager/dbManager.vue')
       }
     ]
   }

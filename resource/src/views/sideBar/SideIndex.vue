@@ -29,7 +29,7 @@
             <el-menu-item index="1-4-1">item one</el-menu-item>
           </el-sub-menu>
         </el-sub-menu>
-        <el-menu-item index="/about">
+        <el-menu-item index="/dbManager">
           <el-icon><icon-menu /></el-icon>
           <span>Navigator Two </span>
         </el-menu-item>
