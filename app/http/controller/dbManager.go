@@ -3,7 +3,9 @@ package controller
 import (
 	tools "app-log/pkg/tools/json"
 	"context"
+	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -33,8 +35,31 @@ func GetDbList(c *gin.Context) {
 		l["db"] = v
 		l["clsNum"] = document["collections"]
 		l["size"] = document["dataSize"]
+		if v == "admin" || v == "config" || v == "local" {
+			l["disabled"] = true
+		} else {
+			l["disabled"] = false
+		}
 
 		listArr = append(listArr, l)
 	}
 	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": listArr})
+}
+
+func CreateDB(c *gin.Context) {
+	// 定义接收数据的结构体
+	type DbInfo struct {
+		// binding:"required"修饰的字段，若接收为空值，则报错，是必须字段
+		Name string `form:"name" json:"name" uri:"name" xml:"name" binding:"required"`
+	}
+
+	// 声明接收的变量
+	var form DbInfo
+
+	if err := c.Bind(&form); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(form.Name)
 }
