@@ -16,7 +16,7 @@
             :icon="Delete"
             size="small"
             :disabled="scope.row.disabled"
-            @click.prevent="deleteRow(scope.$index)"
+            @click.prevent="deleteRow(scope.$index,scope.row.db)"
             >
             Remove
             </el-button>
@@ -29,7 +29,10 @@
       <el-dialog v-model="form.dialogFormVisible" title="Create Db">
         <el-form :model="form">
           <el-form-item label="Db Name" :label-width="form.formLabelWidth">
-            <el-input v-model="form.createDb.name" autocomplete="off" />
+            <el-input v-model="form.createDb.dbName" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="cls Name" :label-width="form.formLabelWidth">
+            <el-input v-model="form.createDb.clsName" autocomplete="off" />
           </el-form-item>
           <!-- <el-form-item label="Zones" :label-width="form.formLabelWidth">
             <el-select v-model="form.createDb.name" placeholder="Please select a zone">
@@ -72,7 +75,8 @@ const form = reactive({
     disabled: false
   }],
   createDb: {
-    name: ''
+    dbName: '',
+    clsName: ''
   },
   formLabelWidth: '30'
 })
@@ -103,9 +107,8 @@ const getDbList = () => {
       form.tableData = data
     })
 }
-const deleteRow = (index: number) => {
-  form.tableData.splice(index, 1)
-  console.log('click')
+const deleteRow = (index: number, name: string) => {
+  deleteDb(name, index)
 }
 const createDb = () => {
   console.log('created db')
@@ -113,24 +116,43 @@ const createDb = () => {
 }
 const cancelCreateDb = () => {
   form.dialogFormVisible = false
-  form.createDb.name = ''
+  form.createDb.dbName = ''
+  form.createDb.clsName = ''
 }
-const errorMsg = () => {
-  ElMessage.error('Oops, this is a error message.')
+const errorMsg = (msg: string) => {
+  ElMessage.error(msg)
 }
 const createDbOk = () => {
   const params = {
-    name: form.createDb.name
+    dbName: form.createDb.dbName,
+    clsName: form.createDb.clsName
   }
   proxy.axios.post('api/log/db/create', params)
     .then((e:any) => {
-      var data = e.data.data
+      var data = e.data
       if (data.status) {
-        errorMsg()
+        errorMsg(data.data)
         return
       }
-
       getDbList()
+      cancelCreateDb()
+    })
+}
+
+const deleteDb = (name: string, index: number) => {
+  const params = {
+    dbName: name
+  }
+  proxy.axios.post('api/log/db/delete', params)
+    .then((e:any) => {
+      var data = e.data
+      if (data.status) {
+        errorMsg(data.data)
+        return
+      }
+      form.tableData.splice(index, 1)
+      getDbList()
+      return true
     })
 }
 </script>
