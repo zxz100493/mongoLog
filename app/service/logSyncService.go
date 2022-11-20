@@ -1,32 +1,33 @@
 package service
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
 )
 
 type LogContent struct {
-	Datetime       string `json:"datetime"`
-	Timestamp      string `json:"timestamp"`
-	NginxRequestId string `json:"nginx_request_id"`
-	UniqueRemark   string `json:"unique_remark"`
-	CnRemark       string `json:"cn_remark"`
-	UserId         string `json:"user_id"`
-	Project        string `json:"project"`
-	Types          string `json:"type"`
-	Path           string `json:"path"`
-	Module         string `json:"module"`
-	Host           string `json:"host"`
-	Url            string `json:"url"`
-	Level          string `json:"level"`
-	Context        string `json:"context"`
-	Backtrace      string `json:"backtrace"`
-	PostData       string `json:"postData"`
-	GetData        string `json:"getData"`
+	Datetime       string      `json:"datetime"`
+	Timestamp      int         `json:"timestamp"`
+	NginxRequestId string      `json:"nginx_request_id"`
+	UniqueRemark   string      `json:"unique_remark"`
+	CnRemark       string      `json:"cn_remark"`
+	UserId         interface{} `json:"user_id"`
+	Project        string      `json:"project"`
+	Types          string      `json:"type"`
+	Path           string      `json:"path"`
+	Module         string      `json:"module"`
+	Host           string      `json:"host"`
+	Url            string      `json:"url"`
+	Level          string      `json:"level"`
+	Context        interface{} `json:"context"`
+	Backtrace      interface{} `json:"backtrace"`
+	PostData       interface{} `json:"postData"`
+	GetData        interface{} `json:"getData"`
 }
 
 func SyncLog(dir string) {
@@ -48,25 +49,33 @@ func readDir(path string) {
 		return
 	}
 	defer jsonFile.Close()
+	read := bufio.NewReader(jsonFile)
 
-	jsonData, err := ioutil.ReadAll(jsonFile)
-	if err != nil {
-		fmt.Println("error reading json file")
-		return
+	num := 0
+	for {
+		line, err := read.ReadString('\n')
+		num++
+		if err == io.EOF {
+			break
+		}
+		str := []byte(line)
+		if err != nil {
+			fmt.Println("error reading json file")
+			return
+		}
+		var lc LogContent
+		err = json.Unmarshal(str, &lc)
+		if err != nil {
+			fmt.Println("err--------")
+			fmt.Printf("%s", str)
+			fmt.Println("line--------")
+			fmt.Printf("%s", line)
+			log.Fatal("err:", err)
+		}
+		// fmt.Printf("%s", lc)
+		// put to channel and send to client
 	}
-	fmt.Println("-------------")
-	var lc []LogContent
-	err = json.Unmarshal(jsonData, &lc)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s", jsonData)
-
-	log.Fatal(lc)
-	for _, lv := range lc {
-		fmt.Println(lv.Datetime)
-		log.Fatal()
-	}
+	fmt.Println("all_line_is:", num)
 }
 
 // write db
