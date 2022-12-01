@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type LogContent struct {
@@ -30,7 +31,33 @@ type LogContent struct {
 	GetData        interface{} `json:"getData"`
 }
 
+var ch = make(chan LogContent, 20)
+var tick <-chan time.Time
+
 func SyncLog(dir string) {
+	go walkDir(dir)
+	go watchChannel()
+}
+
+func watchChannel() {
+loop:
+	for {
+		select {
+		case c, ok := <-ch:
+			if !ok {
+				break loop
+			}
+			fmt.Println("---------------")
+			fmt.Println(c)
+		case <-tick:
+			fmt.Println("it is time")
+			break loop
+		}
+	}
+
+}
+
+func walkDir(dir string) {
 	for _, entry := range dirents(dir) {
 		path := filepath.Join(dir, entry.Name())
 		if entry.IsDir() {
@@ -40,7 +67,6 @@ func SyncLog(dir string) {
 		}
 	}
 }
-
 func readDir(path string) {
 	fmt.Println("path:", path)
 	jsonFile, err := os.Open(path)
@@ -72,6 +98,7 @@ func readDir(path string) {
 			fmt.Printf("%s", line)
 			log.Fatal("err:", err)
 		}
+		ch <- lc
 		// fmt.Printf("%s", lc)
 		// put to channel and send to client
 	}
