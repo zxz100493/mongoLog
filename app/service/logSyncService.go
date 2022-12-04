@@ -1,6 +1,7 @@
 package service
 
 import (
+	mongoDB "app-log/pkg/database/mongoDb"
 	"bufio"
 	"encoding/json"
 	"fmt"
@@ -8,7 +9,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
+	"sync"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (
@@ -40,6 +45,34 @@ var (
 	tick <-chan time.Time
 )
 
+type mongoObject struct {
+	Client *mongo.Client
+}
+
+var (
+	once sync.Once
+	conn *mongoObject
+)
+
+func NewMongoObject() *mongoObject {
+	fmt.Println("NewMongoObject")
+	return &mongoObject{
+		Client: mongoDB.MongoClicent(),
+	}
+}
+
+// func init(){
+// 	GetConn()
+// }
+
+func GetConn() {
+	if conn == nil {
+		once.Do(func() {
+			conn = NewMongoObject()
+		})
+	}
+}
+
 func SyncLog(dir string) {
 	go walkDir(dir)
 	go watchChannel()
@@ -56,12 +89,8 @@ loop:
 				break loop
 			}
 			batchData = append(batchData, c)
-			fmt.Println("---------------")
-			// fmt.Println(batchData)
 			if len(batchData) >= 20 {
-				// insert db
-				log.Fatal(batchData)
-
+				writeDb(batchData)     // insert db
 				batchData = []tmpMap{} //clear all
 			}
 		case <-tick:
@@ -126,8 +155,36 @@ func readDir(path string) {
 }
 
 // write db
-func writeDb() {
+func writeDb(data []tmpMap) {
+	fmt.Println("xxxxxxxxxxxxxxxxxxxx")
 
+	// divide db
+	type info map[string]interface{}
+	// var insertInfo []info
+	// i := make(info)
+	for _, v := range data {
+		path := insertDbName(v["path"])
+		dbName := strings.ToLower(string(path[3]))
+		// newInfo := i{
+		// 	"db" : dbName,
+		// 	"collection" : path,
+		// 	"data" : v["content"],
+		// }
+		// insertInfo = append(insertInfo, newInfo)
+		// log.Fatal(dbName)
+	}
+
+	// insertDb
+	// conn.Client.Database(dbName).Collection(path).InsertMany(context.TODO(),v["content"])
+}
+
+func insertDbName(pathName interface{}) string {
+	path := pathName.(string)
+	index := strings.LastIndex(path, "/")
+	name := path[index+1:]
+	suffix := strings.Split(name, ".")[1]
+	newPath := strings.Replace(name, "."+suffix, " ", 1)
+	return newPath
 }
 
 func dirents(dir string) []os.DirEntry {
