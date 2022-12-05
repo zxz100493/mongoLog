@@ -159,22 +159,33 @@ func writeDb(data []tmpMap) {
 	fmt.Println("xxxxxxxxxxxxxxxxxxxx")
 
 	// divide db
-	type info map[string]interface{}
+	// var info = make(map[string]map[string][]tmpMap)
+	var info = make(map[string]interface{})
+	var content = make(map[string][]interface{})
+
 	// var insertInfo []info
 	// i := make(info)
 	for _, v := range data {
 		path := insertDbName(v["path"])
 		dbName := strings.ToLower(string(path[3]))
-		// newInfo := i{
-		// 	"db" : dbName,
-		// 	"collection" : path,
-		// 	"data" : v["content"],
-		// }
-		// insertInfo = append(insertInfo, newInfo)
-		// log.Fatal(dbName)
+		clsName := strings.ToLower(path[3:])
+		_, ok := content[clsName]
+		if !ok {
+			content = make(map[string][]interface{})
+		}
+		content[clsName] = append(content[clsName], v["content"])
+		info[dbName] = content
 	}
-
 	// insertDb
+	for k, v := range info {
+		if k == "p" {
+			fmt.Println(k)
+			fmt.Println(v)
+		}
+
+	}
+	log.Fatal()
+
 	// conn.Client.Database(dbName).Collection(path).InsertMany(context.TODO(),v["content"])
 }
 
