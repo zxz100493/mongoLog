@@ -3,6 +3,7 @@ package service
 import (
 	mongoDB "app-log/pkg/database/mongoDb"
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,23 +19,23 @@ import (
 
 type (
 	LogContent struct {
-		Datetime       string      `json:"datetime"`
-		Timestamp      int         `json:"timestamp"`
-		NginxRequestId string      `json:"nginx_request_id"`
-		UniqueRemark   string      `json:"unique_remark"`
-		CnRemark       string      `json:"cn_remark"`
-		UserId         interface{} `json:"user_id"`
-		Project        string      `json:"project"`
-		Types          string      `json:"type"`
-		Path           string      `json:"path"`
-		Module         string      `json:"module"`
-		Host           string      `json:"host"`
-		Url            string      `json:"url"`
-		Level          string      `json:"level"`
-		Context        interface{} `json:"context"`
-		Backtrace      interface{} `json:"backtrace"`
-		PostData       interface{} `json:"postData"`
-		GetData        interface{} `json:"getData"`
+		Datetime       string      `json:"datetime" bson:"datetime"`
+		Timestamp      int         `json:"timestamp" bason:"timestamp"`
+		NginxRequestId string      `json:"nginx_request_id" bson:"nginx_request_id"`
+		UniqueRemark   string      `json:"unique_remark" bson:"unique_remark"`
+		CnRemark       string      `json:"cn_remark" bson:"cn_remark"`
+		UserId         interface{} `json:"user_id" bson:"user_id"`
+		Project        string      `json:"project" bson:"project"`
+		Types          string      `json:"type" bson:"type"`
+		Path           string      `json:"path" bson:"path"`
+		Module         string      `json:"module" bson:"module"`
+		Host           string      `json:"host" bson:"host"`
+		Url            string      `json:"url" bson:"url"`
+		Level          string      `json:"level" bson:"level"`
+		Context        interface{} `json:"context" bson:"context"`
+		Backtrace      interface{} `json:"backtrace" bson:"backtrace"`
+		PostData       interface{} `json:"postData" bson:"postData"`
+		GetData        interface{} `json:"getData" bson:"getData"`
 	}
 	lcAndPath []map[string]LogContent
 	tmpMap    map[string]interface{}
@@ -162,7 +163,7 @@ func writeDb(data []tmpMap) {
 	// var info = make(map[string]map[string][]tmpMap)
 	var info = make(map[string]interface{})
 	var content = make(map[string][]interface{})
-
+	GetConn()
 	// var insertInfo []info
 	// i := make(info)
 	for _, v := range data {
@@ -177,16 +178,19 @@ func writeDb(data []tmpMap) {
 		info[dbName] = content
 	}
 	// insertDb
-	for k, v := range info {
-		if k == "p" {
-			fmt.Println(k)
-			fmt.Println(v)
+	for dbKey, v := range info {
+		vv := v.(map[string][]interface{})
+		for cls, v3 := range vv {
+			res, err := conn.Client.Database(dbKey).Collection(cls).InsertMany(context.TODO(), v3)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// log.Printf("%v", v3)
+			// log.Printf("%v", res)
+			fmt.Printf("inserted documents with IDs %v\n", res.InsertedIDs)
+			log.Fatal()
 		}
-
 	}
-	log.Fatal()
-
-	// conn.Client.Database(dbName).Collection(path).InsertMany(context.TODO(),v["content"])
 }
 
 func insertDbName(pathName interface{}) string {
