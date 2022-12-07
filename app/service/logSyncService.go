@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -134,7 +135,10 @@ func readDir(path string) {
 			fmt.Println("error reading json file")
 			return
 		}
-		var lc LogContent
+		// var lc LogContent
+		// var lc []byte
+		var lc bson.D
+
 		err = json.Unmarshal(str, &lc)
 		if err != nil {
 			fmt.Println("err--------")
@@ -145,7 +149,7 @@ func readDir(path string) {
 		}
 		tmpMap := make(tmpMap)
 		tmpMap["path"] = path
-		tmpMap["content"] = lc
+		tmpMap["content"] = str
 
 		ch <- tmpMap
 
@@ -179,14 +183,31 @@ func writeDb(data []tmpMap) {
 	}
 	// insertDb
 	for dbKey, v := range info {
+		fmt.Printf("%s", v)
+		// log.Fatal(dbKey)
 		vv := v.(map[string][]interface{})
 		for cls, v3 := range vv {
+			/* for _, v4 := range v3 {
+				switch t := v4.(type) {
+				case nil:
+					fmt.Println("nil", t)
+				case tmpMap:
+					fmt.Println("tmpMap", t)
+				case interface{}:
+					fmt.Println("interface", t)
+				default:
+					fmt.Println("unknow")
+				}
+				fmt.Println()
+			} */
 			res, err := conn.Client.Database(dbKey).Collection(cls).InsertMany(context.TODO(), v3)
 			if err != nil {
 				log.Fatal(err)
 			}
 			// log.Printf("%v", v3)
 			// log.Printf("%v", res)
+			fmt.Println(dbKey)
+			fmt.Println(cls)
 			fmt.Printf("inserted documents with IDs %v\n", res.InsertedIDs)
 			log.Fatal()
 		}
