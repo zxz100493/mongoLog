@@ -203,8 +203,8 @@ func writeDb(data []tmpMap) {
 					}
 					log.Fatal(err)
 				}
-				fmt.Printf("found document %v", result)
-				log.Fatal()
+				// fmt.Printf("found document %v", result)
+				// log.Fatal()
 			}
 		}
 	}
@@ -215,8 +215,13 @@ func insertDbName(pathName interface{}) string {
 	index := strings.LastIndex(path, "/")
 	name := path[index+1:]
 	suffix := strings.Split(name, ".")[1]
-	newPath := strings.Replace(name, "."+suffix, " ", 1)
-	return newPath
+	clearQuote := strings.Replace(name, ".", "_", strings.Count(name, "."))
+	newPath := strings.Replace(clearQuote, "_"+suffix, " ", 1)
+	log.Println(path)
+	log.Println(strings.TrimSpace(newPath))
+	log.Println("----------------")
+
+	return strings.TrimSpace(newPath)
 }
 
 func dirents(dir string) []os.DirEntry {

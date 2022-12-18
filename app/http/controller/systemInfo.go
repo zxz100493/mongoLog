@@ -160,6 +160,7 @@ func GetDbDetail(c *gin.Context) {
 func GetClsDetail(c *gin.Context) {
 	GetConn()
 	name := c.Query("name")
+	log.Printf("name:%s,end", name)
 	var document bson.M
 	err := conn.Client.Database(name).RunCommand(
 		context.Background(),
