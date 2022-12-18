@@ -4,6 +4,7 @@ import (
 	"app-log/config"
 	"app-log/router"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -14,13 +15,15 @@ func main() {
 	// r := gin.Default()
 	r := gin.New()
 	r.Use(cors.Default())
-	r.StaticFile("/", "./resource/dist/index.html")
+	// r.StaticFile("/", "./resource/dist/index.html")
 
 	router.LoadLog(r)
 	path, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
+	r.GET("/", gin.WrapH(http.FileServer(http.Dir("./resource/dist")))) // chargpt recommended
+
 	config.Init(fmt.Sprintf("%s/", path))
 	// fmt.Printf("%s/../", path)
 	// fmt.Printf("%s/../", path)

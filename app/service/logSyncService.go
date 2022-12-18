@@ -4,7 +4,6 @@ import (
 	mongoDB "app-log/pkg/database/mongoDb"
 	"bufio"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -16,6 +15,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type (
@@ -136,27 +136,29 @@ func readDir(path string) {
 			return
 		}
 		// var lc LogContent
+		// var lc bson.Raw
 		// var lc []byte
-		var lc bson.D
+		// var lc bson.D
+		// var lc []interface{}
 
-		err = json.Unmarshal(str, &lc)
+		// err = json.Unmarshal(str, &lc)
+		var data bson.D
+		err = bson.UnmarshalExtJSON(str, true, &data)
+		if err != nil {
+			fmt.Println(err)
+		}
 		if err != nil {
 			fmt.Println("err--------")
 			fmt.Printf("%s", str)
 			fmt.Println("line--------")
-			fmt.Printf("%s", line)
-			log.Fatal("err:", err)
+			log.Fatal("err1-unmarshal:", err)
 		}
 		tmpMap := make(tmpMap)
 		tmpMap["path"] = path
-		tmpMap["content"] = str
+		tmpMap["content"] = data
 
 		ch <- tmpMap
-
-		// fmt.Printf("%s", lc)
-		// put to channel and send to client
 	}
-	// fmt.Println("all_line_is:", num)
 }
 
 // write db
@@ -164,12 +166,9 @@ func writeDb(data []tmpMap) {
 	fmt.Println("xxxxxxxxxxxxxxxxxxxx")
 
 	// divide db
-	// var info = make(map[string]map[string][]tmpMap)
 	var info = make(map[string]interface{})
 	var content = make(map[string][]interface{})
 	GetConn()
-	// var insertInfo []info
-	// i := make(info)
 	for _, v := range data {
 		path := insertDbName(v["path"])
 		dbName := strings.ToLower(string(path[3]))
@@ -183,33 +182,30 @@ func writeDb(data []tmpMap) {
 	}
 	// insertDb
 	for dbKey, v := range info {
-		fmt.Printf("%s", v)
-		// log.Fatal(dbKey)
 		vv := v.(map[string][]interface{})
 		for cls, v3 := range vv {
-			/* for _, v4 := range v3 {
-				switch t := v4.(type) {
-				case nil:
-					fmt.Println("nil", t)
-				case tmpMap:
-					fmt.Println("tmpMap", t)
-				case interface{}:
-					fmt.Println("interface", t)
-				default:
-					fmt.Println("unknow")
-				}
-				fmt.Println()
-			} */
 			res, err := conn.Client.Database(dbKey).Collection(cls).InsertMany(context.TODO(), v3)
 			if err != nil {
 				log.Fatal(err)
 			}
-			// log.Printf("%v", v3)
-			// log.Printf("%v", res)
-			fmt.Println(dbKey)
-			fmt.Println(cls)
-			fmt.Printf("inserted documents with IDs %v\n", res.InsertedIDs)
-			log.Fatal()
+			opts := options.FindOne().SetSort(bson.D{{"_id", 1}})
+			var result bson.M
+			for _, id := range res.InsertedIDs {
+				fmt.Printf("inserted documents with IDs %v\n", id)
+				err := conn.Client.Database(dbKey).Collection(cls).FindOne(context.TODO(),
+					bson.D{{"_id", id}},
+					opts).Decode(&result)
+				if err != nil {
+					// ErrNoDocuments means that the filter did not match any documents in
+					// the collection.
+					if err == mongo.ErrNoDocuments {
+						return
+					}
+					log.Fatal(err)
+				}
+				fmt.Printf("found document %v", result)
+				log.Fatal()
+			}
 		}
 	}
 }
