@@ -1,12 +1,37 @@
 <template>
   <div>
     <div class="top-button">
-      <el-button type="primary" round @click="createDb">+ Add Db</el-button>
+      <!-- <el-button type="primary" round @click="createDb">+ Add Db</el-button> -->
+      <el-row class="demo-autocomplete">
+    <el-col :span="12">
+      <el-autocomplete
+        v-model="state1"
+        :fetch-suggestions="querySearch"
+        clearable
+        class="inline-input w-50"
+        placeholder="Please Input"
+        @select="handleSelect"
+      />
+    </el-col>
+    <el-col :span="12">
+      <el-autocomplete
+        v-model="state2"
+        :fetch-suggestions="querySearch"
+        :trigger-on-focus="false"
+        clearable
+        class="inline-input w-50"
+        placeholder="Please Input"
+        @select="handleSelect"
+      />
+    </el-col>
+  </el-row>
     </div>
     <div>
       <el-table :data="form.tableData" border style="width: 100%">
-        <el-table-column prop="db" label="dbName" width="180" />
-        <el-table-column prop="clsNum" label="collectionsNum" width="180" />
+        <el-table-column prop="datetime" label="datetime" width="180" />
+        <el-table-column prop="context" label="context" width="180" />
+        <el-table-column prop="size" label="diskUsage" />
+        <el-table-column prop="size" label="diskUsage" />
         <el-table-column prop="size" label="diskUsage" />
         <el-table-column fixed="right" label="Operations" width="120">
           <template #default="scope">
@@ -193,5 +218,8 @@ const deleteDb = (name: string, index: number) => {
   .top-button{
     display: flex;
     margin-bottom: 10px;
+  }
+  .search-form{
+    display:flex
   }
 </style>

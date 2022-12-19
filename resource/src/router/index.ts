@@ -26,6 +26,11 @@ const routes = [
         path: '/dbManager',
         name: 'dbmanager',
         component: () => import(/* webpackChunkName: "dbmanager" */ '../views/dbManager/dbManager.vue')
+      },
+      {
+        path: '/queryLog',
+        name: 'querylog',
+        component: () => import(/* webpackChunkName: "querylog" */ '../views/queryLog/queryLog.vue')
       }
     ]
   }
