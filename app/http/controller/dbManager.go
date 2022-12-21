@@ -15,8 +15,7 @@ import (
 )
 
 func GetDbList(c *gin.Context) {
-	GetConn()
-	dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
+	dbs, err := service.Conn.Client.ListDatabaseNames(c, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +25,7 @@ func GetDbList(c *gin.Context) {
 	var document bson.M
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	for _, v := range dbs {
-		conn.Client.Database(v).RunCommand(
+		service.Conn.Client.Database(v).RunCommand(
 			ctx,
 			bsonx.Doc{{"dbStats", bsonx.Int32(1)}},
 		).Decode(&document)
@@ -63,9 +62,8 @@ func CreateDB(c *gin.Context) {
 		return
 	}
 
-	GetConn()
 	opts := options.CreateCollection().SetCapped(true).SetSizeInBytes(1024)
-	err := conn.Client.Database(form.DbName).CreateCollection(c, form.ClsName, opts)
+	err := service.Conn.Client.Database(form.DbName).CreateCollection(c, form.ClsName, opts)
 	if err != nil {
 		c.JSON(200, gin.H{"msg": "ok", "status": tools.ERROR, "data": err.Error()})
 		return
@@ -95,7 +93,8 @@ func DeleteDB(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": nil}) */
-	service.SyncLog("/logs")
+	// service.SyncLog("/logs")
+	service.GetAllClsName()
 }
 
 func TestSync() {

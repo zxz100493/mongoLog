@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app-log/app/service"
 	"app-log/config"
 	"app-log/router"
 	"fmt"
@@ -25,6 +26,7 @@ func main() {
 	r.GET("/", gin.WrapH(http.FileServer(http.Dir("./resource/dist")))) // chargpt recommended
 
 	config.Init(fmt.Sprintf("%s/", path))
+	service.GetConn()
 	// fmt.Printf("%s/../", path)
 	// fmt.Printf("%s/../", path)
 	if err := r.Run(":8888"); err != nil {

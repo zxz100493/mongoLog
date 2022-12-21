@@ -1,12 +1,11 @@
 package controller
 
 import (
-	mongoDB "app-log/pkg/database/mongoDb"
+	"app-log/app/service"
 	tools "app-log/pkg/tools/json"
 	"context"
 	"fmt"
 	"log"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,43 +13,12 @@ import (
 	"github.com/shirou/gopsutil/v3/host"
 	"github.com/shirou/gopsutil/v3/mem"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-type mongoObject struct {
-	Client *mongo.Client
-}
-
-var (
-	once sync.Once
-	conn *mongoObject
-)
-
-func NewMongoObject() *mongoObject {
-	fmt.Println("NewMongoObject")
-	return &mongoObject{
-		Client: mongoDB.MongoClicent(),
-	}
-}
-
-// func init(){
-// 	GetConn()
-// }
-
-func GetConn() {
-	if conn == nil {
-		once.Do(func() {
-			conn = NewMongoObject()
-		})
-	}
-}
-
 func GetSystemInfo(c *gin.Context) {
-	GetConn()
-
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	serverStatus, err := conn.Client.Database("admin").RunCommand(
+	serverStatus, err := service.Conn.Client.Database("admin").RunCommand(
 		ctx,
 		bsonx.Doc{{"serverStatus", bsonx.Int32(1)}},
 	).DecodeBytes()
@@ -121,8 +89,7 @@ func formatFileSize(fileSize uint64) (size string) {
 }
 
 func GetDbNameList(c *gin.Context) {
-	GetConn()
-	dbs, err := conn.Client.ListDatabaseNames(c, bson.M{})
+	dbs, err := service.Conn.Client.ListDatabaseNames(c, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -130,16 +97,15 @@ func GetDbNameList(c *gin.Context) {
 }
 
 func GetDbDetail(c *gin.Context) {
-	GetConn()
 	name := c.Query("name")
-	cls, err := conn.Client.Database(name).ListCollectionNames(c, bson.M{})
+	cls, err := service.Conn.Client.Database(name).ListCollectionNames(c, bson.M{})
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	var document bson.M
-	err = conn.Client.Database(name).RunCommand(
+	err = service.Conn.Client.Database(name).RunCommand(
 		ctx,
 		bsonx.Doc{{"dbStats", bsonx.Int32(1)}},
 	).Decode(&document)
@@ -158,11 +124,10 @@ func GetDbDetail(c *gin.Context) {
 }
 
 func GetClsDetail(c *gin.Context) {
-	GetConn()
 	name := c.Query("name")
 	log.Printf("name:%s,end", name)
 	var document bson.M
-	err := conn.Client.Database(name).RunCommand(
+	err := service.Conn.Client.Database(name).RunCommand(
 		context.Background(),
 		bson.M{"collStats": name},
 	).Decode(&document)

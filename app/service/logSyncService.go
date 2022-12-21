@@ -1,7 +1,6 @@
 package service
 
 import (
-	mongoDB "app-log/pkg/database/mongoDb"
 	"bufio"
 	"context"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,34 +44,6 @@ var (
 	ch   = make(chan tmpMap, 20)
 	tick <-chan time.Time
 )
-
-type mongoObject struct {
-	Client *mongo.Client
-}
-
-var (
-	once sync.Once
-	conn *mongoObject
-)
-
-func NewMongoObject() *mongoObject {
-	fmt.Println("NewMongoObject")
-	return &mongoObject{
-		Client: mongoDB.MongoClicent(),
-	}
-}
-
-// func init(){
-// 	GetConn()
-// }
-
-func GetConn() {
-	if conn == nil {
-		once.Do(func() {
-			conn = NewMongoObject()
-		})
-	}
-}
 
 func SyncLog(dir string) {
 	go walkDir(dir)
@@ -184,7 +154,7 @@ func writeDb(data []tmpMap) {
 	for dbKey, v := range info {
 		vv := v.(map[string][]interface{})
 		for cls, v3 := range vv {
-			res, err := conn.Client.Database(dbKey).Collection(cls).InsertMany(context.TODO(), v3)
+			res, err := Conn.Client.Database(dbKey).Collection(cls).InsertMany(context.TODO(), v3)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -192,7 +162,7 @@ func writeDb(data []tmpMap) {
 			var result bson.M
 			for _, id := range res.InsertedIDs {
 				fmt.Printf("inserted documents with IDs %v\n", id)
-				err := conn.Client.Database(dbKey).Collection(cls).FindOne(context.TODO(),
+				err := Conn.Client.Database(dbKey).Collection(cls).FindOne(context.TODO(),
 					bson.D{{"_id", id}},
 					opts).Decode(&result)
 				if err != nil {
