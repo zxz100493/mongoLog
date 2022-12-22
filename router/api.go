@@ -26,6 +26,7 @@ func LoadLog(e *gin.Engine) {
 			log.GET("/db/list", controller.GetDbList)
 			log.POST("/db/create", controller.CreateDB)
 			log.POST("/db/delete", controller.DeleteDB)
+			log.GET("/db/cls/names", controller.GetAllClsName)
 		}
 	}
 }

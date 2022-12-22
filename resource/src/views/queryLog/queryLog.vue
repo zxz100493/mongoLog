@@ -103,8 +103,38 @@ const form = reactive({
     dbName: '',
     clsName: ''
   },
-  formLabelWidth: '30'
+  formLabelWidth: '30',
+  selectList: [],
+  selectedCls: ''
 })
+
+interface RestaurantItem {
+  value: string
+  link: string
+}
+
+const state1 = ref('')
+const state2 = ref('')
+
+const restaurants = ref<RestaurantItem[]>([])
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? restaurants.value.filter(createFilter(queryString))
+    : restaurants.value
+  // call callback function to return suggestions
+  cb(results)
+}
+const createFilter = (queryString: string) => {
+  return (restaurant: RestaurantItem) => {
+    return (
+      restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+    )
+  }
+}
+
+const handleSelect = (item: RestaurantItem) => {
+  console.log(item)
+}
 
 const tableData = reactive([
   {
@@ -126,10 +156,18 @@ onMounted(() => {
   getDbList()
 })
 const getDbList = () => {
-  proxy.axios.get('api/log/db/list', { card: 111 })
+  proxy.axios.get('api/log/db/cls/names', { card: 111 })
     .then((e:any) => {
       var data = e.data.data
-      form.tableData = data
+      form.selectList = data
+      const arr = []
+      for (let i = 0; i < data.length; i++) {
+        arr[i] = {
+          value: data[i],
+          link: ''
+        }
+      }
+      restaurants.value = arr
     })
 }
 const deleteRow = (index: number, name: string) => {

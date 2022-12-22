@@ -73,7 +73,7 @@ func CreateDB(c *gin.Context) {
 
 func DeleteDB(c *gin.Context) {
 	// 定义接收数据的结构体
-	/* type DbInfo struct {
+	type DbInfo struct {
 		// binding:"required"修饰的字段，若接收为空值，则报错，是必须字段
 		DbName string `form:"dbName" json:"dbName" uri:"dbName" xml:"dbName" binding:"required"`
 	}
@@ -86,15 +86,14 @@ func DeleteDB(c *gin.Context) {
 		return
 	}
 
-	GetConn()
-	err := conn.Client.Database(form.DbName).Drop(c)
+	err := service.Conn.Client.Database(form.DbName).Drop(c)
 	if err != nil {
 		c.JSON(200, gin.H{"msg": "ok", "status": tools.ERROR, "data": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": nil}) */
+	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": nil})
 	// service.SyncLog("/logs")
-	service.GetAllClsName()
+	// service.GetAllClsName()
 }
 
 func TestSync() {
