@@ -46,3 +46,7 @@ func GetAllDbNames(c *gin.Context) {
 func GetAllClsName(c *gin.Context) {
 	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": service.GetAllClsName()})
 }
+
+func QueryLog(c *gin.Context) {
+	c.JSON(200, gin.H{"msg": "ok", "status": tools.SUCCESS, "data": service.QueryLog(c)})
+}

@@ -4,6 +4,7 @@ import ElementPlus from 'element-plus'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import JsonViewer from 'vue-json-viewer'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/dist/index.css'
-createApp(App).use(store).use(store).use(router).use(axios).use(ElementPlus).mount('#app')
+createApp(App).use(store).use(store).use(router).use(axios).use(ElementPlus).use(JsonViewer).mount('#app')

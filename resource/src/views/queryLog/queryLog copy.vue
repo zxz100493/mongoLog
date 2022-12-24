@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <div class="top-button">
       <!-- <el-button type="primary" round @click="createDb">+ Add Db</el-button> -->
@@ -57,13 +57,7 @@
     </div>
     <div>
       <el-dialog v-model="form.dialogFormVisible" title="Create Db">
-        <json-viewer :value="form.jsonData"
-        :expand-depth=5
-        copyable
-        boxed
-        sort
-        >
-        </json-viewer>
+        <json-viewer :value="form.jsonData" :expanded="true"></json-viewer>
       </el-dialog>
     </div>
   </div>
@@ -80,7 +74,6 @@ import {
   Star
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import 'vue-json-viewer/style.css'
 // do not use same name with ref
 const input = ref('')
 const value1 = ref('')
@@ -181,7 +174,7 @@ const queryLog = () => {
 }
 
 const viewJson = (data: string) => {
-  form.dialogFormVisible = true
+  form.showJson = true
   form.jsonData = data
 }
 
@@ -356,4 +349,4 @@ const deleteDb = (name: string, index: number) => {
   .search-form{
     display:flex
   }
-</style>
+</style> -->
