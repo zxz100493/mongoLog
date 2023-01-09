@@ -43,12 +43,12 @@
           <template #default="scope">
             <el-button
             link
-            type="danger"
-            :icon="Delete"
+            type="primary"
+            :icon="Search"
             size="small"
             @click.prevent="viewJson(scope.row.context)"
             >
-            Remove
+            View Detail
             </el-button>
             <!-- <el-button link type="danger" size="small">Edit</el-button> -->
           </template>
@@ -56,12 +56,14 @@
       </el-table>
     </div>
     <div>
-      <el-dialog v-model="form.dialogFormVisible" title="Create Db">
+        <el-pagination background layout="sizes, prev, pager, next" :total="1000" />
+    </div>
+    <div style="text-align:left">
+      <el-dialog v-model="form.dialogFormVisible" title="View Detail">
         <json-viewer :value="form.jsonData"
         :expand-depth=5
         copyable
         boxed
-        sort
         >
         </json-viewer>
       </el-dialog>

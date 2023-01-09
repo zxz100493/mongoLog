@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,10 +44,24 @@ func GetAllLogName() {
 
 func QueryLog(c *gin.Context) []bson.M {
 	name := c.Query("uniqueMark")
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	intPage, err := strconv.Atoi(page)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	intLimit, err := strconv.Atoi(limit)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	skip := int64(intPage*intLimit - intLimit)
 	dbName := string(name[0])
 	fmt.Println(name)
 	fmt.Println(dbName)
-	opts := options.Find().SetSort(bson.D{{"datetime", -1}})
+	opts := options.Find().SetSort(bson.D{{"datetime", -1}}).SetLimit(int64(intLimit)).SetSkip(skip)
+	// .FindOptions{Limit: &intLimit, Skip: &skip}
 
 	cursor, err := Conn.Client.Database(dbName).Collection(name).Find(c, bson.D{}, opts)
 	if err != nil {
