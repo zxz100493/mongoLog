@@ -56,7 +56,11 @@
       </el-table>
     </div>
     <div>
-        <el-pagination background layout="sizes, prev, pager, next" :total="1000" />
+      <el-pagination background
+        layout="sizes, prev, pager, next"
+        @size-change="changeSize"
+        @current-change="changeCurrentChange"
+        :total="form.totalData" />
     </div>
     <div style="text-align:left">
       <el-dialog v-model="form.dialogFormVisible" title="View Detail">
@@ -128,7 +132,10 @@ const form = reactive({
   selectList: [],
   showJson: false,
   jsonData: '',
-  selectedCls: ''
+  selectedCls: '',
+  pageSize: 10,
+  page: 1,
+  totalData: 0
 })
 
 interface RestaurantItem {
@@ -159,11 +166,22 @@ const handleSelect = (item: RestaurantItem) => {
   console.log(item)
 }
 
+const changeSize = (value: number) => {
+  form.pageSize = value
+  queryLog()
+}
+const changeCurrentChange = (value: number) => {
+  form.page = value
+  queryLog()
+}
+
 const queryLog = () => {
   const uniqueMark = state1.value
   const timeStart = value2.value[0]
   const timeEnd = value2.value[1]
   const keywords = input.value
+  const limit = form.pageSize
+  const page = form.page
   console.log(keywords)
   if (!uniqueMark && !timeStart && !timeEnd && !keywords) {
     ElMessage.error('please check your query condition!!!')
@@ -173,11 +191,14 @@ const queryLog = () => {
     uniqueMark: uniqueMark,
     timeStart: timeStart,
     timeEnd: timeEnd,
-    keywords: keywords
+    keywords: keywords,
+    limit: limit,
+    page: page
   }
   proxy.axios.get('api/log/db/query', { params: params })
     .then((e:any) => {
-      var data = e.data.data
+      var data = e.data.data.list
+      form.totalData = e.data.data.total
       form.tableData = data
     })
 }
