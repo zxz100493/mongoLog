@@ -48,7 +48,9 @@ func QueryLog(c *gin.Context) map[string]interface{} {
 	page := c.DefaultQuery("page", "1")
 	limit := c.DefaultQuery("limit", "10")
 	keyword := c.DefaultQuery("keywords", "")
-
+	startDate := c.DefaultQuery("timeStart", "")
+	endDate := c.DefaultQuery("timeEnd", "")
+	fmt.Println(startDate, endDate)
 	intPage, err := strconv.Atoi(page)
 	if err != nil {
 		fmt.Println(err)
@@ -76,10 +78,15 @@ func QueryLog(c *gin.Context) map[string]interface{} {
 		// filter = append(filter, bson.E{"context", "/" + keyword + "/"})
 		filter = append(filter,
 			bson.E{
-				Key:   "context",
-				Value: bson.M{"$regex": primitive.Regex{Pattern: "/a/", Options: "im"}},
+				Key: "context",
+				// Value: bson.M{"$regex": primitive.Regex{Pattern: "/a/", Options: "im"}},
+				Value: bson.M{"$regex": primitive.Regex{Pattern: "/" + keyword + "/", Options: "im"}},
 			})
 	}
+	if endDate != "" && startDate != "" {
+		filter = append(filter, bson.E{Key: "datetime", Value: bson.M{"$gt": startDate, "$lt": endDate}})
+	}
+
 	fmt.Println("filter:", filter)
 
 	cursor, err := Conn.Client.Database(dbName).Collection(name).Find(c, filter, opts)
