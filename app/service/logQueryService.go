@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -74,14 +74,24 @@ func QueryLog(c *gin.Context) map[string]interface{} {
 		log.Fatal(err)
 	}
 	filter := bson.D{}
+	fmt.Println("keyword", keyword)
 	if keyword != "" {
+		newKeyword := strings.Split(keyword, ":")
+
 		// filter = append(filter, bson.E{"context", "/" + keyword + "/"})
+		/* filter = append(filter,
+		bson.E{
+			Key: "context",
+			// Value: bson.M{"$regex": primitive.Regex{Pattern: "/a/", Options: "im"}},
+			Value: bson.M{"$regex": primitive.Regex{Pattern: "/" + keyword + "/", Options: "im"}},
+		}) */
 		filter = append(filter,
 			bson.E{
-				Key: "context",
+				Key: newKeyword[0],
 				// Value: bson.M{"$regex": primitive.Regex{Pattern: "/a/", Options: "im"}},
-				Value: bson.M{"$regex": primitive.Regex{Pattern: "/" + keyword + "/", Options: "im"}},
+				Value: newKeyword[1],
 			})
+
 	}
 	if endDate != "" && startDate != "" {
 		filter = append(filter, bson.E{Key: "datetime", Value: bson.M{"$gt": startDate, "$lt": endDate}})
